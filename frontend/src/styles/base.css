@@ -124,7 +124,21 @@ textarea:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 /* Page framing */
 .workspace { width: min(1600px, calc(100% - 48px)); margin: 0 auto; padding: 30px 0 60px; }
 main.workspace { flex: 1 0 auto; }
-.heading { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 22px; }
+.heading { margin-bottom: 22px; }
+
+/* Controls and simulation target share one band. The simulation column is sized
+   to the width of the last two metric tiles below it, so the two rows line up:
+   .metrics is 5 equal columns with a --space-4 gap, and two of those columns
+   plus the gap between them is what this expression works out. Derived rather
+   than hardcoded so it follows if the workspace width changes. */
+.settings-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) calc((100% - 4 * var(--space-4)) * 2 / 5 + var(--space-4));
+  gap: var(--space-4);
+  /* Default `stretch`: both boxes take the row's height, so their borders line
+     up top and bottom even though the controls bar is the taller of the two —
+     and they stay level when "More filters" expands it further. */
+}
 .eyebrow {
   margin-bottom: var(--space-1); color: var(--color-text-secondary); text-transform: uppercase;
   letter-spacing: var(--letter-spacing-badge); font-size: var(--font-size-label);
@@ -140,11 +154,13 @@ h1 {
   font-size: var(--font-size-body-lg); line-height: var(--line-height-body-lg);
 }
 
-/* Simulation target: the run selector, sat beside the heading. */
+/* Simulation target: the run selector, sat beside the controls bar. */
 .simulation {
-  flex: 0 1 480px; padding: var(--space-4); background: var(--color-surface-muted);
+  padding: var(--space-4); background: var(--color-surface-muted);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-none);
+  /* Matches .controls so both boxes in the row end level. */
+  margin-bottom: var(--space-4);
 }
 /* Year and reveal share a row so the header stays one compact band. Wraps
    rather than overflowing once the heading stacks on narrow screens. */
@@ -1338,6 +1354,9 @@ tbody tr.beyond-capacity:hover td { background: var(--color-action-subtle); }
 .error-state { color: var(--color-danger); }
 
 @media (max-width: 1150px) {
+  /* Below this the controls bar's own minmax(280px, 580px) grid and a
+     two-tile-wide sibling no longer both fit, so stack them. */
+  .settings-row { grid-template-columns: 1fr; }
   .analysis { grid-template-columns: 1fr; }
   .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .advanced-filters { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
@@ -1392,10 +1411,6 @@ tbody tr.beyond-capacity:hover td { background: var(--color-action-subtle); }
 
 @media (max-width: 720px) {
   .workspace { width: calc(100% - 24px); }
-  .heading { flex-direction: column; align-items: stretch; gap: 18px; }
-  /* flex-basis becomes a height once the heading stacks, so the card would
-     otherwise stretch to 480px tall. */
-  .simulation { flex: 0 0 auto; }
   .metrics { grid-template-columns: 1fr; }
   .controls-header, .advanced-filters { grid-template-columns: 1fr; gap: 16px; }
   .site-footer-inner { grid-template-columns: 1fr; gap: 22px; width: calc(100% - 24px); }

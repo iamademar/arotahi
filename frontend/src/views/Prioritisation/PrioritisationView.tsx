@@ -178,6 +178,22 @@ export function PrioritisationView({
           <h1>Road area prioritisation</h1>
           <p>{APP_TAGLINE}</p>
         </div>
+      </section>
+
+      {banner}
+
+      {/* One band of run settings: the controls narrow what is shown, the
+          simulation panel selects which run is shown. The panel is sized to
+          line up with the last two metric tiles below it. */}
+      <div className="settings-row">
+        <Controls
+          region={run.region}
+          onRegionChange={(region) => setRun((current) => ({ ...current, region }))}
+          capacity={run.capacity}
+          onCapacityChange={(capacity) => setRun((current) => ({ ...current, capacity }))}
+          filters={run.filters}
+          onFiltersChange={(filters: FilterState) => setRun((current) => ({ ...current, filters }))}
+        />
 
         <SimulationTarget
           years={years}
@@ -186,18 +202,7 @@ export function PrioritisationView({
           revealed={run.revealed}
           onRevealedChange={(revealed) => setRun((current) => ({ ...current, revealed }))}
         />
-      </section>
-
-      {banner}
-
-      <Controls
-        region={run.region}
-        onRegionChange={(region) => setRun((current) => ({ ...current, region }))}
-        capacity={run.capacity}
-        onCapacityChange={(capacity) => setRun((current) => ({ ...current, capacity }))}
-        filters={run.filters}
-        onFiltersChange={(filters: FilterState) => setRun((current) => ({ ...current, filters }))}
-      />
+      </div>
 
       <MetricTiles
         targetYear={run.year ?? 0}

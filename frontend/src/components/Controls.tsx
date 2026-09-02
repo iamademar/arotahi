@@ -198,9 +198,10 @@ export function Controls({
 }
 
 /**
- * The target year is the single most consequential setting on the page, so it
- * sits beside the heading rather than among the filters: it selects which run
- * is being simulated, while the controls bar only narrows what is shown.
+ * The target year is the single most consequential setting on the page: it
+ * selects which run is being simulated, while the controls bar only narrows
+ * what is shown of it. So this stays a panel of its own, sat beside the
+ * controls bar rather than folded in among the filter fields.
  */
 /**
  * The show/hide eye from password fields. Inline SVG rather than an emoji so it
