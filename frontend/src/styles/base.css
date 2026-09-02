@@ -675,7 +675,12 @@ h1 {
 }
 .search input { flex: 1; border: 0; box-shadow: none; }
 .search input:focus-visible { outline-offset: -2px; }
-.table-wrap { overflow: auto; max-height: 620px; }
+/* contain: paint is load-bearing, not an optimisation. The queue table renders
+   ~2900px tall inside this 620px scroller; overflow:auto clips it visually but
+   the subtree still inflates the root scroll height, so the page scrolled about
+   1600px past the footer into blank space. Paint containment stops that
+   propagating. */
+.table-wrap { overflow: auto; max-height: 620px; contain: paint; }
 table { width: 100%; border-collapse: collapse; }
 th {
   height: var(--control-height); padding: 0 var(--space-3); color: var(--color-text-inverse);
