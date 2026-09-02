@@ -30,9 +30,18 @@ export function Footer() {
       <div className="site-footer-inner">
         <div>
           <div className="site-footer-brand">
-            {/* Decorative, as in the Topbar: the name sits right beside it, so
+            {/* A different file from the topbar's: this variant has solid navy
+                tiles, which hold up against the footer's light background,
+                where the outline version reads thin.
+
+                Decorative, as in the Topbar: the name sits right beside it, so
                 alt text would only repeat "Arotahi" to a screen reader. */}
-            <img className="site-footer-mark" src="/arotahi-logo.png" alt="" aria-hidden="true" />
+            <img
+              className="site-footer-mark"
+              src="/arotahi-logo-footer.png"
+              alt=""
+              aria-hidden="true"
+            />
             <strong>{APP_NAME}</strong>
           </div>
           <p className="site-footer-descriptor">{APP_DESCRIPTOR}</p>

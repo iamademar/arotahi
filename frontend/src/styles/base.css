@@ -1391,7 +1391,7 @@ tbody tr.beyond-capacity:hover td { background: var(--color-action-subtle); }
 .site-footer-brand { display: flex; align-items: center; gap: 11px; margin-bottom: 7px; }
 .site-footer-brand strong { margin-bottom: 0; }
 .site-footer-mark {
-  width: 50px; height: 50px; flex: 0 0 auto; display: block; object-fit: contain;
+  width: 60px; height: 60px; flex: 0 0 auto; display: block; object-fit: contain;
 }
 .site-footer p { margin: 0 0 7px; max-width: 62ch; }
 .site-footer p:last-child { margin-bottom: 0; }
