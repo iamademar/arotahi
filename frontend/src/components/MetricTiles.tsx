@@ -6,7 +6,6 @@ import {
   fadeIn,
   staggerParent,
   valueEnter,
-  valueExit,
 } from '../lib/motion'
 import type { BacktestMetrics } from '../lib/backtestMetrics'
 import { formatLift, formatPercent } from '../lib/backtestMetrics'
@@ -100,17 +99,20 @@ function Tile({
           </span>
         )}
       </div>
-      {/* The key carries the rendered text, so any change of figure crossfades
-          rather than mutating in place — a reveal (masked to revealed) and a
-          region change (one number to another) both land as an arrival rather
-          than a hard cut. The masked flag stays in the key even though it is
-          implied by the text: it is what decides the face and the timing below,
-          and reading it here keeps the two in step.
+      {/* Two things change this figure and they want different treatment.
+
+          A reveal swaps the whole face — masked sentence to display figure, in a
+          different font, size and family — so the two texts must not share a
+          node: the key carries `masked`, the old node exits and the new one
+          enters. A region change only rewrites the number, so it keeps that node
+          and fades the figure inside it. Keying the outer node on the number too
+          was tried and is wrong: every intermediate figure the queries pass
+          through while loading mounts another node.
 
           The revealed value is never pre-mounted behind an invisible layer —
           outcome data must not be in the DOM before reveal.
 
-          The two nodes are stacked and crossfade together rather than being
+          The two faces are stacked and crossfade together rather than being
           sequenced with mode="wait". Sequencing looked right in isolation but
           not here: the tile's own chrome — the accent rule, the detail line and
           the value font — switches on the same render, so holding the outgoing
@@ -118,52 +120,49 @@ function Tile({
           revealed" in the revealed tile's display face, where it wrapped to
           three lines and shoved the page down before the figure landed.
 
-          Absolute positioning keeps the outgoing node out of flow so the slot
-          is sized by the incoming value alone; .metric-value-slot holds the
-          height. */}
+          Absolute positioning keeps the outgoing node out of flow so the slot is
+          sized by the incoming value alone; .metric-value-slot holds the height. */}
       <div className="metric-value-slot">
-        {/* mode="wait": the outgoing figure finishes leaving before the next
-            one starts arriving. The slot holds one number at a time, so the two
-            never overlap and never fight over the slot's height.
-
-            Neither alternative survived here. Crossfading them stacked left the
-            old figure behind at full opacity whenever a change landed mid-exit
-            — figures piled up and the tile showed the wrong number. popLayout
-            pulled the exiting node out of flow while this slot was already
-            stacking them itself, and the row collapsed. Sequencing is what the
-            exit/enter split in lib/motion.ts is tuned for: the old number
-            leaves in half the time the new one takes to arrive. */}
-        <AnimatePresence initial={false} mode="wait">
+        <AnimatePresence initial={false}>
           <motion.div
-            key={`${masked ? 'masked' : 'value'}:${value}`}
+            key={masked ? 'masked' : 'value'}
             /* The masked face is carried on the node, not on the tile: the tile's
                .masked class flips a render before this node exits, so a rule
                written as `.metric.masked .metric-value` would restyle the very
                text that is on its way out and set the masked sentence in the
                revealed display face mid-crossfade. */
             className={`metric-value${masked ? ' is-masked' : ''}`}
-            /* The spring is the reveal's alone, and only on the accent tile —
-               the headline of that gesture, landing with the outcome column and
-               the map markers. A region change rewrites all five figures on one
-               render, and five springs firing together reads as the row
-               wobbling rather than as five answers arriving, so everything else
-               crossfades. `revealing` is what separates the two: it is true only
-               on the step out of the masked state, which is the reveal. */
             initial={{ opacity: 0, scale: accent && revealing ? 0.6 : 1 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              transition:
-                accent && revealing
-                  ? POP
-                  : { ...valueEnter, delay: revealing ? 0 : index * VALUE_STAGGER },
-            }}
-            exit={{ opacity: 0, transition: valueExit }}
-            /* The slot is sized by whichever figure is in it, and with
-               mode="wait" that is only ever one — so no positioning games are
-               needed to keep the tile from resizing mid-change. */
+            animate={{ opacity: 1, scale: 1, position: 'relative' }}
+            exit={{ opacity: 0, position: 'absolute' }}
+            transition={accent && revealing ? POP : valueEnter}
           >
-            {value}
+            {/* The number gets its own animation, replayed whenever it changes,
+                so a region change reads as the figure being rewritten rather
+                than silently mutating. animate is keyed on the value: motion
+                restarts the tween when the key changes without mounting a second
+                node, which is what a nested AnimatePresence would do — and those
+                queued up faster than they could drain while data was loading,
+                leaving tiles stuck on a stale number.
+
+                No spring here. A region change rewrites all five tiles on one
+                render, and five springs firing together reads as the row
+                wobbling rather than as five answers arriving; the stagger is
+                what makes them read as arriving at all. */}
+            {/* A plain span with a CSS animation, deliberately not a motion
+                element. .metric is a variant parent (fadeIn under staggerParent)
+                and motion propagates its "hidden"/"visible" state down through
+                every motion descendant; adding one here captured that cascade
+                and left the whole row stuck at opacity 0. React remounts this
+                span whenever the key changes, which restarts the keyframe — the
+                same trick the map markers use, and for the same reason. */}
+            <span
+              className="metric-value-figure"
+              key={value}
+              style={{ animationDelay: `${revealing ? 0 : index * VALUE_STAGGER}s` }}
+            >
+              {value}
+            </span>
           </motion.div>
         </AnimatePresence>
       </div>

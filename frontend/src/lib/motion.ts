@@ -81,20 +81,18 @@ export const popSubtle: Variants = {
 export const POP_STAGGER = ROW_STAGGER
 
 /**
- * The metric tiles' figure-to-figure crossfade. Deliberately slower than
- * DURATION: two numbers swapping in the same slot is a much smaller event than
- * a panel opening, and at 0.2s the change had already finished before the eye
- * arrived — the tiles simply looked like they had always held the new value.
+ * The metric tiles' figure fade. Deliberately slower than DURATION: one number
+ * replacing another in the same slot is a much smaller event than a panel
+ * opening, and at 0.2s it had already finished before the eye arrived — the
+ * tiles simply looked like they had always held the new value.
  *
- * The two halves are asymmetric on purpose. The outgoing figure leaves quickly
- * so it does not sit behind the incoming one, while the new figure takes its
- * time: what should register is the answer arriving, not the old one leaving.
+ * Kept in step with the metric-figure-in keyframe in base.css by hand: the
+ * figure itself is animated in CSS (a motion element there joins .metric's
+ * variant cascade and freezes the row), so the two have to agree.
  */
 export const VALUE_DURATION = 0.45
 
 export const valueEnter: Transition = { duration: VALUE_DURATION, ease: EASE }
-
-export const valueExit: Transition = { duration: VALUE_DURATION * 0.5, ease: EASE }
 
 /**
  * The row's step. Five figures resolving at once reads as a repaint; a small

@@ -375,11 +375,25 @@ h1 {
 /* The two faces are stacked here during a reveal, so the slot has to reserve the
    value line's height itself: the exiting node is taken out of flow. Not a fixed
    height — the masked sentence wraps, and the taller of the two must fit. */
-/* The figures are sequenced, not stacked, so the slot stands empty for a beat
-   between the old number leaving and the new one arriving. Without a floor the
-   tile would collapse by the height of a line and spring back on every change;
-   36px is .metric-value's own line box. */
-.metric-value-slot { position: relative; min-height: 36px; }
+.metric-value-slot { position: relative; }
+/* The figure fades whenever it is rewritten — a region change, mainly. Driven
+   by a keyframe rather than by motion: .metric is a variant parent, and a motion
+   element here joins that cascade and freezes the whole row (see MetricTiles).
+   React's key remounts this span on every new value, which restarts the
+   animation. 450ms because at the shared 200ms the change was over before the
+   eye reached it and the tiles just looked like they had always held the new
+   number. */
+.metric-value-figure {
+  display: block;
+  /* 450ms — VALUE_DURATION in lib/motion.ts; keep the two in step. */
+  animation: metric-figure-in 450ms var(--easing-standard) both;
+}
+@keyframes metric-figure-in { from { opacity: 0; } to { opacity: 1; } }
+/* The fade is the whole effect here, so reduced motion keeps it and only drops
+   the stagger, which exists to spread five simultaneous changes apart. */
+@media (prefers-reduced-motion: reduce) {
+  .metric-value-figure { animation-delay: 0s !important; }
+}
 .metric.accent.masked {
   color: var(--color-text); background: var(--color-surface-muted);
   border-color: var(--color-border); border-style: dashed;
