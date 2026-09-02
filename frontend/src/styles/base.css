@@ -1384,6 +1384,15 @@ tbody tr.beyond-capacity:hover td { background: var(--color-action-subtle); }
   align-items: start;
 }
 .site-footer strong { display: block; margin-bottom: 7px; color: var(--color-text); font-size: 13px; }
+/* Brand lockup, mirroring .brand / .brand-mark in the topbar so the mark reads
+   the same size at both ends of the page. The wrapper carries the spacing, so
+   the heading's own margin is cleared or it would sit off-centre beside the
+   logo. */
+.site-footer-brand { display: flex; align-items: center; gap: 11px; margin-bottom: 7px; }
+.site-footer-brand strong { margin-bottom: 0; }
+.site-footer-mark {
+  width: 50px; height: 50px; flex: 0 0 auto; display: block; object-fit: contain;
+}
 .site-footer p { margin: 0 0 7px; max-width: 62ch; }
 .site-footer p:last-child { margin-bottom: 0; }
 .site-footer-descriptor { color: var(--color-text); }

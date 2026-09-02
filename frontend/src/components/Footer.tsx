@@ -29,7 +29,12 @@ export function Footer() {
     <footer className="site-footer">
       <div className="site-footer-inner">
         <div>
-          <strong>{APP_NAME}</strong>
+          <div className="site-footer-brand">
+            {/* Decorative, as in the Topbar: the name sits right beside it, so
+                alt text would only repeat "Arotahi" to a screen reader. */}
+            <img className="site-footer-mark" src="/arotahi-logo.png" alt="" aria-hidden="true" />
+            <strong>{APP_NAME}</strong>
+          </div>
           <p className="site-footer-descriptor">{APP_DESCRIPTOR}</p>
           <p>{APP_TAGLINE}</p>
         </div>
