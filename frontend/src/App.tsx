@@ -58,7 +58,7 @@ export default function App() {
         <div className="workspace">
           <div className="version-banner is-info" role="status">
             <strong>Waking the prediction service</strong>
-            This can take up to 20 seconds on the first visit. The review queue
+            This can take up to a minute on the first visit. The review queue
             loads automatically once it responds.
           </div>
         </div>
