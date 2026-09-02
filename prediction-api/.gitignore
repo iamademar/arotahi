@@ -2,13 +2,39 @@
 __pycache__/
 *.pyc
 .DS_Store
+.pytest_cache/
+.vite/
 
-# Exported from the ml project; rebuild with scripts/export_serving_data.py
+# Exported from the ml project; rebuild with scripts/export_serving_data.py.
+# Ignored by default so a stray large intermediate can't be committed by
+# accident, then re-included file by file below.
 data/*.parquet
 data/*.csv
 data/*.json
 data/*.md
 
-# Built by scripts/train_and_save.py
+# ...except the serving set, which IS tracked (~5 MB total).
+#
+# The Docker image bakes these in, and CI builds that image from a plain
+# `actions/checkout` — so if they are not in git, the image builds successfully
+# and then dies in its startup lifespan. Tracking them also makes a deployed
+# image reproducible from a git SHA and lets the API parity test run on a fresh
+# clone instead of skipping.
+#
+# This is only reasonable because export_serving_data.py filters the feature
+# matrix to the served years: it is 3.3 MB, not the 17 MB full panel.
+!data/features_1km_lag0.parquet
+!data/cell_year_counts.parquet
+!data/scores_2024_1km_lag0.parquet
+!data/scores_2025_1km_lag0.parquet
+!data/snapshot_manifest.json
+!data/panel_coverage.csv
+!data/feature_dictionary.csv
+!data/model_card.md
+
+# Built by scripts/train_and_save.py. Tracked for the same reason as the data
+# above; the pinned scikit-learn/lightgbm versions in requirements.txt are what
+# keep this artefact loadable.
 models/*.joblib
 !models/.gitkeep
+!models/cas-area-risk-1.0.0.joblib

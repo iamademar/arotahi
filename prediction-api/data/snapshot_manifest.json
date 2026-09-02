@@ -1,0 +1,10 @@
+{
+  "filename": "Crash_Analysis_System__CAS__data.csv.csv",
+  "size_bytes": 199339426,
+  "sha256": "967a34b12525d369cd2e406d52b529bb81bae2f0cceb5fdd37d62d714368490e",
+  "row_count": 705609,
+  "column_count": 72,
+  "min_crash_year": 2006,
+  "max_crash_year": 2026,
+  "sha256_matches_spec": true
+}

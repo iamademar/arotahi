@@ -71,7 +71,7 @@ async function request<T>(path: string, parse: (data: unknown) => T): Promise<T>
 }
 
 export function getHealth(): Promise<Health> {
-  return request('/health', (d) => healthSchema.parse(d))
+  return request('/api/health', (d) => healthSchema.parse(d))
 }
 
 export interface AreaQuery {

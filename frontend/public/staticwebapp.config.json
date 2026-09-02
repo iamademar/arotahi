@@ -1,0 +1,16 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/api/*",
+      "/assets/*",
+      "/fonts/*",
+      "/tech/*",
+      "*.{png,jpg,jpeg,svg,ico,json,css,js,woff,woff2}"
+    ]
+  },
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  }
+}

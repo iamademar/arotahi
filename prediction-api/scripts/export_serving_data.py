@@ -16,13 +16,22 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pyarrow.parquet as pq
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = SERVICE_ROOT / "data"
 
-# Copied as-is from the modelling project's outputs.
+# Must stay in step with app/dependencies.py's SERVED_YEARS. Declared here rather
+# than imported: importing app.dependencies pulls in the vendored cas_area and
+# asserts a model artefact exists, but this script runs *before* the model is
+# trained on a fresh setup.
+SERVED_YEARS = (2024, 2025)
+
+FEATURE_SOURCE = "data/processed/features_1km_lag0.parquet"
+
+# Copied as-is from the modelling project's outputs. The feature matrix is not
+# here: it is filtered on the way through, see export_serving_features.
 COPY_FILES = [
-    ("data/processed/features_1km_lag0.parquet", "features_1km_lag0.parquet"),
     ("data/processed/scores_2024_1km_lag0.parquet", "scores_2024_1km_lag0.parquet"),
     ("data/processed/scores_2025_1km_lag0.parquet", "scores_2025_1km_lag0.parquet"),
     ("data/processed/snapshot_manifest.json", "snapshot_manifest.json"),
@@ -30,6 +39,28 @@ COPY_FILES = [
     ("outputs/feature_dictionary.csv", "feature_dictionary.csv"),
     ("outputs/panel_coverage.csv", "panel_coverage.csv"),
 ]
+
+
+def export_serving_features(ml_root: Path) -> Path:
+    """Copy the feature matrix, keeping only the years the service actually serves.
+
+    The modelling project's file holds all fifteen years (2011-2025, 309k rows) in
+    a *single row group*. That layout defeats a `filters=` predicate pushdown at
+    read time — pyarrow decompresses the whole group before it can drop a row — so
+    the service used to spend 1.3 GB at startup to retain 15 MB of scores.
+
+    Filtering here instead is what makes a 1 GiB container viable: 17 MB -> 3.1 MB
+    on disk, 1.3 GB -> 569 MB peak RSS, and the row_group_size keeps the result
+    chunked so a future reader can prune. Predictions are bit-identical; the API
+    parity test in tests/test_api.py is the guard.
+    """
+    table = pq.read_table(
+        ml_root / FEATURE_SOURCE,
+        filters=[("target_year", "in", list(SERVED_YEARS))],
+    )
+    out = DATA_DIR / "features_1km_lag0.parquet"
+    pq.write_table(table, out, compression="snappy", row_group_size=8192)
+    return out
 
 
 def export_cell_year_counts(ml_root: Path) -> Path:
@@ -70,6 +101,13 @@ def main() -> int:
             continue
         shutil.copy2(src, DATA_DIR / target)
         print(f"  {target:<38} {(DATA_DIR / target).stat().st_size / 1e6:>7.2f} MB")
+
+    if not (ml_root / FEATURE_SOURCE).exists():
+        missing.append(FEATURE_SOURCE)
+    else:
+        out = export_serving_features(ml_root)
+        years = ", ".join(str(y) for y in SERVED_YEARS)
+        print(f"  {out.name:<38} {out.stat().st_size / 1e6:>7.2f} MB  ({years} only)")
 
     if missing:
         print(f"\nMissing from the modelling project: {missing}", file=sys.stderr)

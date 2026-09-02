@@ -12,6 +12,8 @@ all, and presenting them as low risk would be actively misleading (spec 6).
 
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import PlainTextResponse
@@ -22,7 +24,23 @@ from .schemas import (
     NotScored, Provenance, ScoreRequest, ScoreResponse, YearHistory,
 )
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Load the model and score the served years before accepting traffic.
+
+    get_state() is lru_cached, so without this the load happens on the first
+    request instead of at startup. That matters in a container: the readiness
+    probe would pass while the service was still unloaded, and a missing model or
+    data file would surface as a 500 on a user's request rather than as a
+    revision that visibly fails to start.
+    """
+    get_state()
+    get_crash_history()
+    yield
+
+
 app = FastAPI(
+    lifespan=lifespan,
     title="CAS Recurring Crash Area Prioritisation Assistant",
     description=(
         "Ranks 1 km grid cells by the probability of a serious or fatal crash in the "
@@ -66,7 +84,11 @@ def _require_year(year: int) -> pd.DataFrame:
     return frame
 
 
+# Registered on both paths deliberately. /health is the container probe target
+# and what the vite dev proxy forwards; /api/health is what the browser calls in
+# production, because the Static Web App linked backend proxies only /api/*.
 @app.get("/health", response_model=Health, tags=["service"])
+@app.get("/api/health", response_model=Health, tags=["service"])
 def health() -> Health:
     state = get_state()
     return Health(

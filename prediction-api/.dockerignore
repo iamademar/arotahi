@@ -1,0 +1,13 @@
+# Keep the build context small: az acr build uploads it to Azure.
+# data/ and models/ are deliberately NOT ignored — baking them in is the point.
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.vite/
+.DS_Store
+tests/
+scripts/
+README.md
+Dockerfile
+.dockerignore

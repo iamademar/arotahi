@@ -1,0 +1,231 @@
+name: Deploy (Azure)
+
+# Manual dispatch or an arotahi-v* tag push — deliberately NOT deploy-on-merge,
+# so an unrelated commit to main never redeploys a live demo. Tagging a release
+# is the deploy trigger; workflow_dispatch covers initial provisioning and
+# pre-release iteration.
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment (matches infrastructure/environments/<name>.bicepparam)"
+        required: true
+        default: prod
+  push:
+    tags:
+      - "arotahi-v*"
+
+permissions:
+  id-token: write # OIDC federated Azure login — no long-lived client secret
+  contents: read
+
+env:
+  AZURE_RESOURCE_GROUP: rg-arotahi-core
+  AZURE_LOCATION: eastus2
+  # Must match modules/container-registry.bicep's derived name (namePrefix with
+  # hyphens stripped). Duplicated by hand — keep the two in step.
+  ACR_NAME: arotahiacr
+
+jobs:
+  bootstrap-acr:
+    name: Bootstrap resource group + ACR (idempotent)
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # az acr build (below) needs the registry to exist, but on a first deploy
+      # nothing does yet — infrastructure/modules/container-registry.bicep owns
+      # this resource, and that only runs in deploy-infra, AFTER the image is
+      # built. Create it here instead. Both calls are idempotent. The config MUST
+      # match container-registry.bicep exactly (Standard SKU, no admin user) or
+      # the later `az deployment group create` sees drift on this resource.
+      - name: Create resource group + ACR if they don't exist
+        run: |
+          az group create --name "${{ env.AZURE_RESOURCE_GROUP }}" --location "${{ env.AZURE_LOCATION }}"
+          az acr create \
+            --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --name "${{ env.ACR_NAME }}" \
+            --sku Standard \
+            --admin-enabled false
+
+  build-image:
+    name: Build + push API image
+    runs-on: ubuntu-latest
+    environment: production
+    needs: bootstrap-acr
+    steps:
+      - uses: actions/checkout@v4
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Resolve image tag
+        id: tag
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=manual-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+          fi
+      # The model and the served-year data are what make this image work. They
+      # are committed (see prediction-api/.gitignore) precisely so this checkout
+      # carries them; without these files the image builds fine and then fails
+      # its startup lifespan, which is a much more expensive way to find out.
+      - name: Verify serving artefacts are present
+        run: |
+          test -f prediction-api/models/cas-area-risk-1.0.0.joblib
+          test -f prediction-api/data/features_1km_lag0.parquet
+          test -f prediction-api/data/model_card.md
+          echo "artefacts present ($(du -sh prediction-api/data prediction-api/models | tr '\n' ' '))"
+      # az acr build rather than docker/buildx: the build runs in Azure and
+      # pushes directly, so the runner needs no Docker and no registry login.
+      - name: az acr build
+        run: |
+          az acr build \
+            --registry "${{ env.ACR_NAME }}" \
+            --image "arotahi-api:${{ steps.tag.outputs.tag }}" \
+            --image "arotahi-api:latest" \
+            --file prediction-api/Dockerfile \
+            prediction-api
+    outputs:
+      image-tag: ${{ steps.tag.outputs.tag }}
+
+  deploy-infra:
+    name: Deploy infrastructure (Bicep)
+    runs-on: ubuntu-latest
+    environment: production
+    needs: build-image
+    outputs:
+      static-web-app-name: ${{ steps.deploy.outputs.staticWebAppName }}
+      static-web-app-hostname: ${{ steps.deploy.outputs.staticWebAppHostname }}
+      api-fqdn: ${{ steps.deploy.outputs.apiFqdn }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: az deployment group create
+        id: deploy
+        env:
+          # Consumed by readEnvironmentVariable('IMAGE_TAG') in the bicepparam —
+          # NOT passed as --parameters imageTag=.
+          IMAGE_TAG: ${{ needs.build-image.outputs.image-tag }}
+        run: |
+          az group create --name "${{ env.AZURE_RESOURCE_GROUP }}" --location "${{ env.AZURE_LOCATION }}"
+
+          result=$(az deployment group create \
+            --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --template-file infrastructure/main.bicep \
+            --parameters infrastructure/environments/prod.bicepparam \
+            --query properties.outputs \
+            -o json)
+
+          echo "staticWebAppName=$(echo "$result" | jq -r '.staticWebAppName.value')" >> "$GITHUB_OUTPUT"
+          echo "staticWebAppHostname=$(echo "$result" | jq -r '.staticWebAppHostname.value')" >> "$GITHUB_OUTPUT"
+          echo "apiFqdn=$(echo "$result" | jq -r '.apiFqdn.value')" >> "$GITHUB_OUTPUT"
+
+  deploy-frontend:
+    name: Deploy frontend (Static Web App)
+    runs-on: ubuntu-latest
+    environment: production
+    needs: deploy-infra
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install + build
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Fetch SWA deployment token
+        id: swa-token
+        run: |
+          token=$(az staticwebapp secrets list \
+            --name "${{ needs.deploy-infra.outputs.static-web-app-name }}" \
+            --query properties.apiKey -o tsv)
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.swa-token.outputs.token }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          # Point app_location at the already-built output, NOT frontend/.
+          # output_location is only honoured when the action runs the build
+          # itself (Oryx); with skip_app_build it is ignored and app_location is
+          # uploaded verbatim — pointing it at frontend/ ships the *source*
+          # index.html (which loads /src/main.tsx) instead of dist/index.html
+          # (which loads the hashed /assets bundle), yielding a blank page.
+          app_location: frontend/dist
+          skip_app_build: true
+          skip_api_build: true
+
+  smoke-test:
+    name: Smoke test
+    runs-on: ubuntu-latest
+    needs: [deploy-infra, deploy-frontend]
+    steps:
+      # Every check targets the SWA-proxied host, never the raw Container Apps
+      # FQDN — linking the Container App as the SWA's backend auto-restricts it
+      # to SWA-proxied traffic, so a direct hit on the bare FQDN is EXPECTED to
+      # fail post-link. The hostname must come from the deployment output: Azure
+      # appends a randomized suffix, so it is NOT deterministically
+      # "<resource-name>.azurestaticapps.net".
+      - name: Check the API is reachable through the SWA proxy
+        run: |
+          swa_host="${{ needs.deploy-infra.outputs.static-web-app-hostname }}"
+          # The first revision and the backend link take a moment to propagate.
+          for i in $(seq 1 12); do
+            body=$(curl -s --max-time 20 "https://${swa_host}/api/health" || true)
+            if echo "$body" | jq -e '.model_version == "cas-area-risk-1.0.0"' >/dev/null 2>&1; then
+              echo "$body" | jq -c '{model_version, years_available}'
+              exit 0
+            fi
+            echo "attempt $i: not ready yet"
+            sleep 10
+          done
+          echo "::error::/api/health never returned the expected model version"
+          exit 1
+      - name: Check a real scoring request succeeds
+        run: |
+          swa_host="${{ needs.deploy-infra.outputs.static-web-app-hostname }}"
+          status=$(curl -s -o /dev/null -w "%{http_code}" "https://${swa_host}/api/runs/2025/areas?limit=1")
+          echo "GET /api/runs/2025/areas?limit=1 -> $status"
+          if [[ "$status" != "200" ]]; then
+            echo "::error::expected 200 from a scoring request, got $status"
+            exit 1
+          fi
+      - name: Check the frontend and its deep links are served
+        run: |
+          swa_host="${{ needs.deploy-infra.outputs.static-web-app-hostname }}"
+          for path in "/" "/shortlist" "/model"; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "https://${swa_host}${path}")
+            echo "GET ${path} -> $status"
+            # /shortlist and /model are client-side routes: a 404 here means
+            # staticwebapp.config.json's navigationFallback did not ship.
+            if [[ "$status" != "200" ]]; then
+              echo "::error::expected 200 from ${path}, got $status"
+              exit 1
+            fi
+          done
