@@ -49,7 +49,7 @@ export default function App() {
 
   return (
     <>
-      <Topbar modelVersion={modelVersion} shortlistCount={shortlist.entries.length} />
+      <Topbar shortlistCount={shortlist.entries.length} />
 
       {health.error && (
         <div className="workspace">

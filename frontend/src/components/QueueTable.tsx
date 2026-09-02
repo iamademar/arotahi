@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'motion/react'
-import { DURATION, EASE, ROW_STAGGER } from '../lib/motion'
+import { DURATION, EASE, POP, POP_STAGGER, ROW_STAGGER, pop, transition } from '../lib/motion'
 import type { AreaScore } from '../api/schemas'
 import { NotScoredError } from '../api/client'
 import { useArea } from '../api/queries'
@@ -131,8 +131,21 @@ export function QueueTable({
               <th scope="col">Rank</th>
               <th scope="col">Area</th>
               <th scope="col">Estimated probability</th>
-              {/* The outcome column exists only after reveal. */}
-              {revealed && <th scope="col">Serious or fatal crash in {targetYear}</th>}
+              {/* The outcome column exists only after reveal. The cell itself
+                  mounts plainly and its label pops: animating a th's own box
+                  would fight the table's column sizing. */}
+              {revealed && (
+                <th scope="col">
+                  <motion.span
+                    className="outcome-head"
+                    variants={pop}
+                    initial="hidden"
+                    animate="visible"
+                  >
+                    Serious or fatal crash in {targetYear}
+                  </motion.span>
+                </th>
+              )}
               <th scope="col">
                 <span className="sr-only">Actions</span>
               </th>
@@ -184,10 +197,28 @@ export function QueueTable({
                   </td>
                   {revealed && (
                     <td>
+                      {/* Only a recorded crash gets the overshoot. "None" is the
+                          absence of a finding, so it fades in on the shared
+                          timing: popping every empty cell would draw the eye
+                          down the column evenly and hide where the hits are. */}
                       {area.actual_outcome === 1 ? (
-                        <span className="outcome-occurred">▲ Occurred</span>
+                        <motion.span
+                          className="outcome-occurred"
+                          initial={{ opacity: 0, scale: 0.6 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ ...POP, delay: Math.min(index, 12) * POP_STAGGER }}
+                        >
+                          ▲ Occurred
+                        </motion.span>
                       ) : (
-                        <span className="outcome-none">None</span>
+                        <motion.span
+                          className="outcome-none"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ ...transition, delay: Math.min(index, 12) * POP_STAGGER }}
+                        >
+                          None
+                        </motion.span>
                       )}
                     </td>
                   )}

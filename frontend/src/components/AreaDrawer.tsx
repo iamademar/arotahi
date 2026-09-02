@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
-import { DURATION, EASE, transition } from '../lib/motion'
+import { DURATION, EASE, popSubtle, transition } from '../lib/motion'
 import type { AreaScore } from '../api/schemas'
 import { useAreaHistory } from '../api/queries'
 import { BAND_LABELS, percentileBand } from '../geo/cellGeometry'
@@ -104,9 +104,9 @@ export function AreaDrawer({
                 Deliberate: the percentage stands alone until outcomes are
                 revealed. */}
             {revealed && (
-              <small>
+              <motion.small variants={popSubtle} initial="hidden" animate="visible">
                 At least one reported serious/fatal crash in {area.target_year}
-              </small>
+              </motion.small>
             )}
           </div>
           <div className="percentile">
@@ -233,12 +233,14 @@ export function AreaDrawer({
             {entry ? '✓ Shortlisted' : '＋ Add to shortlist'}
           </button>
         </div>
+        {/* popSubtle, not pop: this is a sentence, and a paragraph that bounces
+            reads as an error state rather than as emphasis. */}
         {revealed && (
-          <p className="muted-note">
+          <motion.p className="muted-note" variants={popSubtle} initial="hidden" animate="visible">
             {area.actual_outcome === 1
               ? `A serious or fatal crash was recorded here in ${area.target_year}.`
               : `No serious or fatal crash was recorded here in ${area.target_year}.`}
-          </p>
+          </motion.p>
         )}
       </motion.aside>
     </motion.div>

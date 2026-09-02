@@ -89,7 +89,6 @@ export function ModelPerformanceView({
               <h2>Pipeline overview</h2>
               <p>From raw crash records to a ranked risk map.</p>
             </div>
-            <span className="badge">Worked example</span>
           </div>
         </header>
         <PipelineOverview year={health ? Math.max(...health.years_available) : undefined} />

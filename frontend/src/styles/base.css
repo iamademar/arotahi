@@ -76,6 +76,22 @@ textarea:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   border: var(--border-width) solid rgba(255, 255, 255, .5);
   border-radius: var(--radius-none); font-size: var(--font-size-label);
 }
+/* Shares the bordered chip shape of .prototype, but as a link it also needs the
+   icon baseline-aligned with the label and the underline suppressed. The colour
+   is restated on hover and focus because the global `a:hover` sets the mid-blue
+   --color-action-hover, which all but vanishes against the navy header. */
+.repo-link {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  color: var(--color-text-inverse); text-decoration: none;
+  transition: border-color 120ms ease-out, background-color 120ms ease-out;
+}
+.repo-link:hover,
+.repo-link:focus-visible {
+  color: var(--color-text-inverse);
+  border-color: var(--color-text-inverse);
+  background: rgba(255, 255, 255, .12);
+}
+
 .button {
   min-height: var(--control-height); display: inline-flex; align-items: center;
   justify-content: center;
@@ -341,16 +357,29 @@ h1 {
   border-top: var(--border-width-thick) solid var(--color-brand-lime);
 }
 .metric.accent .metric-value { color: var(--color-text-inverse); }
+/* Beats the rule above while a masked value is still fading out of an accent
+   tile that has already turned navy. */
+.metric.accent .metric-value.is-masked { color: var(--color-text-secondary); }
 .metric.accent .metric-label, .metric.accent .metric-detail { color: rgba(255, 255, 255, .8); }
 /* New: masked state for outcome-dependent tiles before reveal */
 .metric.masked {
   background: var(--color-surface-muted); border-style: dashed;
 }
-.metric.masked .metric-value {
+/* Addressed to the value node's own class rather than the tile's, so the text
+   keeps its face for as long as it is on screen. See MetricTiles.tsx. */
+.metric-value.is-masked {
   color: var(--color-text-secondary); font-size: var(--font-size-small);
   line-height: var(--line-height-small); font-family: var(--font-sans);
   font-weight: var(--font-weight-regular);
 }
+/* The two faces are stacked here during a reveal, so the slot has to reserve the
+   value line's height itself: the exiting node is taken out of flow. Not a fixed
+   height — the masked sentence wraps, and the taller of the two must fit. */
+/* The figures are sequenced, not stacked, so the slot stands empty for a beat
+   between the old number leaving and the new one arriving. Without a floor the
+   tile would collapse by the height of a line and spring back on every change;
+   36px is .metric-value's own line box. */
+.metric-value-slot { position: relative; min-height: 36px; }
 .metric.accent.masked {
   color: var(--color-text); background: var(--color-surface-muted);
   border-color: var(--color-border); border-style: dashed;
@@ -506,6 +535,20 @@ h1 {
   background: transparent; border: 2px solid var(--color-brand-navy);
   border-radius: var(--radius-none); font-size: 9px;
 }
+/* The glyph is its own element so the pop can scale it without touching the
+   swatch's frame. line-height:1 because as a grid item it would otherwise take
+   the legend row's, which is taller than the 14px box that contains it. */
+.outcome-swatch-glyph { display: block; line-height: 1; }
+/* The reveal, in CSS for the reasons noted in CellMap. The row fades on the
+   shared 180ms; the swatch pops on the same curve as the map's markers. */
+.legend-item-revealed { animation: outcome-fade var(--duration-slow) var(--easing-standard) both; }
+.legend-item-revealed .outcome-swatch-glyph {
+  animation: outcome-pop 320ms var(--easing-standard) both;
+}
+@keyframes outcome-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .legend-item-revealed .outcome-swatch-glyph { animation: none; }
+}
 /* Stacked bottom-left so the OpenFreeMap / OpenStreetMap attribution at
    bottom-right stays visible, as the ODbL and OpenFreeMap's terms require. */
 .context-note {
@@ -534,6 +577,26 @@ h1 {
   color: var(--color-text-inverse);
   background: var(--color-danger); border: 2px solid #fff;
   border-radius: var(--radius-none); font-size: var(--font-size-label);
+}
+/* These markers are imperative MapLibre DOM, created outside React's tree, so
+   motion cannot drive them at all — hence a keyframe, shared with the legend
+   swatch above so the two read as one gesture. It runs on the inner glyph, not
+   on the marker itself: MapLibre owns the marker's transform for positioning,
+   and scaling that element would tear it off its cell. The overshoot is tuned
+   to sit close to the POP spring in lib/motion.ts. */
+@keyframes outcome-pop {
+  from { transform: scale(.5); opacity: 0; }
+  60% { transform: scale(1.12); opacity: 1; }
+  to { transform: scale(1); opacity: 1; }
+}
+.map-marker-outcome-glyph {
+  display: block; line-height: 1;
+  animation: outcome-pop 320ms var(--easing-standard) both;
+}
+/* MotionConfig covers the React elements; the CSS-driven ones need their own
+   guard. Only the scaling stops — the fade is what reduced motion keeps. */
+@media (prefers-reduced-motion: reduce) {
+  .map-marker-outcome-glyph { animation: none; }
 }
 
 /* Hover popup (CellMap hoverInfo). Follows the pointer, so it stays small and
@@ -618,6 +681,9 @@ tbody tr.beyond-capacity:hover td { background: var(--color-action-subtle); }
   min-width: 42px; font-weight: var(--font-weight-semibold); font-size: var(--font-size-small);
   font-variant-numeric: tabular-nums;
 }
+/* Inline-block so the pop has a box to scale: a bare inline span ignores
+   transform. The header wraps like the text it replaced, so no width is set. */
+.outcome-head { display: inline-block; }
 .outcome-occurred {
   display: inline-flex; align-items: center; gap: var(--space-1); color: var(--color-danger);
   font-weight: var(--font-weight-semibold); font-size: var(--font-size-small);
@@ -896,7 +962,9 @@ tbody tr.beyond-capacity:hover td { background: var(--color-action-subtle); }
 /* A container query, not a media query: the grid has to respond to the width of
    the panel it sits in, which is narrower than the viewport. Keyed to the
    viewport, the five-track rule below would still apply in a 360px panel. */
-.pipeline { padding: 16px; container-type: inline-size; }
+/* Named because .pipeline-step is a container too, so anything inside a step
+   resolves an unnamed query against the step, not this panel. */
+.pipeline { padding: 16px; container-type: inline-size; container-name: pipeline; }
 .pipeline-grid {
   display: grid; gap: 24px; align-items: stretch; max-width: 100%;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -904,20 +972,39 @@ tbody tr.beyond-capacity:hover td { background: var(--color-action-subtle); }
 /* Three columns is the ceiling. The export ran all five across one row, which
    left each step too narrow for its card contents; the fifth step's map and the
    third's metric rows suffered most. Five steps over three columns puts 1-3 on
-   the first row and 4-5 on the second, reading plainly left to right. */
+   the first row and 4-5 on the second, reading plainly left to right.
+
+   Six tracks rather than three so the last two steps can take half the row each:
+   with only five steps, thirds would leave the second row a third empty. Six is
+   the common multiple, so steps 1-3 still measure exactly one third. */
 @container (min-width: 860px) {
-  .pipeline-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  /* The steps already stretch to equal heights, but the lede sits between the
-     heading and the card, so a step whose intro wraps to an extra line starts
-     its card lower and ends it shorter than its neighbours. Reserving a fixed
-     four lines pins every card to the same offset however the prose wraps.
-     Four rather than three: the column is narrow enough around 900-1100px that
-     these intros take a fourth line, and that is still a three-column layout.
-     Only inside this query — at one column there is no neighbour to align to,
-     and the reserve would be dead space under every intro. */
-  .pipeline-lede { min-height: calc(4 * 1.55em); }
+  .pipeline-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .pipeline-step { grid-column: span 2; }
+  .pipeline-step:nth-child(n + 4) { grid-column: span 3; }
 }
-.pipeline-step { display: flex; flex-direction: column; gap: 14px; container-type: inline-size; }
+/* The steps already stretch to equal heights, but the lede sits between the
+   heading and the card, so a step whose intro wraps to an extra line starts its
+   card lower and ends it shorter than its neighbours. Reserving a fixed four
+   lines pins every card to the same offset however the prose wraps. Four rather
+   than three: the column is narrow enough around 900-1100px that these intros
+   take a fourth line, and that is still a three-column layout.
+
+   Only while the panel is multi-column — stacked at one column there is no
+   neighbour to align to, and the reserve would be dead space under every intro.
+   Addressed to the named panel: the lede sits inside .pipeline-step, which is
+   its own container, so an unnamed query here would measure the step instead. */
+@container pipeline (min-width: 860px) {
+  .pipeline-lede { min-height: calc(4 * 1.55em); }
+  /* Steps 4 and 5 are the widest and their intros run to two lines, so the
+     four-line reserve left a visible hole above their cards. They are also the
+     only two on their row, and both intros wrap the same, so their cards line
+     up without it. */
+  .pipeline-step:nth-child(n + 4) .pipeline-lede { min-height: 0; }
+}
+.pipeline-step {
+  display: flex; flex-direction: column; gap: 14px; margin-top: 25px;
+  container-type: inline-size;
+}
 .pipeline-step-head { display: flex; align-items: center; gap: 10px; }
 .pipeline-step-number {
   width: 30px; height: 30px; flex: none; display: grid; place-items: center;

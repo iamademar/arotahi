@@ -46,3 +46,59 @@ export const staggerParent: Variants = {
 export const REVEAL_DURATION_MS = 1100
 
 export const REVEAL_FADE_MS = 180
+
+/**
+ * The outcome reveal. A spring rather than a keyframed scale so that toggling
+ * outcomes off mid-flight settles from wherever the element had reached instead
+ * of snapping back to a fixed track. The overshoot is deliberately small: these
+ * are figures an analyst is about to read, and a bouncy number invites a second
+ * look at the animation rather than at the value.
+ */
+export const POP: Transition = { type: 'spring', stiffness: 520, damping: 24, mass: 0.7 }
+
+/**
+ * Hiding outcomes is not an event worth celebrating, so the exit is the plain
+ * shared timing rather than the spring: a quick shrink out, no overshoot.
+ */
+export const pop: Variants = {
+  hidden: { opacity: 0, scale: 0.6 },
+  visible: { opacity: 1, scale: 1, transition: POP },
+  exit: { opacity: 0, scale: 0.6, transition },
+}
+
+/** Prose reads badly at a strong scale, so notes and captions start closer to 1. */
+export const popSubtle: Variants = {
+  hidden: { opacity: 0, scale: 0.94 },
+  visible: { opacity: 1, scale: 1, transition: POP },
+  exit: { opacity: 0, scale: 0.94, transition },
+}
+
+/**
+ * The outcome column's step down the queue. Matches ROW_STAGGER so a reveal
+ * cascades at the same rate the rows themselves arrive at; QueueTable caps the
+ * index it multiplies, or fifty rows would take over two seconds to finish.
+ */
+export const POP_STAGGER = ROW_STAGGER
+
+/**
+ * The metric tiles' figure-to-figure crossfade. Deliberately slower than
+ * DURATION: two numbers swapping in the same slot is a much smaller event than
+ * a panel opening, and at 0.2s the change had already finished before the eye
+ * arrived — the tiles simply looked like they had always held the new value.
+ *
+ * The two halves are asymmetric on purpose. The outgoing figure leaves quickly
+ * so it does not sit behind the incoming one, while the new figure takes its
+ * time: what should register is the answer arriving, not the old one leaving.
+ */
+export const VALUE_DURATION = 0.45
+
+export const valueEnter: Transition = { duration: VALUE_DURATION, ease: EASE }
+
+export const valueExit: Transition = { duration: VALUE_DURATION * 0.5, ease: EASE }
+
+/**
+ * The row's step. Five figures resolving at once reads as a repaint; a small
+ * stagger left to right makes it read as five answers landing. Kept short —
+ * the whole row still settles well inside a second.
+ */
+export const VALUE_STAGGER = 0.06

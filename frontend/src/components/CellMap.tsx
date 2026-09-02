@@ -108,9 +108,19 @@ function Legend({ revealed, targetYear }: { revealed: boolean; targetYear: numbe
         <span>Lower</span>
         <span>Top ranked</span>
       </div>
+      {/* CSS rather than motion, like the markers below and for the same reason:
+          this legend lives inside the map's overlay, and motion left the row
+          pinned at its initial opacity there — it wrote the inline style and
+          never ran the animation. An animated height:auto fared worse still,
+          resolving "auto" as 0 and clipping the row away entirely. A keyframe
+          owes nothing to React's tree and simply runs. */}
       {revealed && (
-        <div className="legend-item">
-          <span className="outcome-swatch" aria-hidden="true">▲</span>
+        <div className="legend-item legend-item-revealed">
+          <span className="outcome-swatch" aria-hidden="true">
+            {/* The glyph is its own element so the pop scales it without
+                touching the swatch's 14px frame. */}
+            <span className="outcome-swatch-glyph">▲</span>
+          </span>
           <span>{targetYear} serious/fatal outcome</span>
         </div>
       )}
@@ -379,7 +389,13 @@ export function CellMap({
     outcomes.forEach((area) => {
       const element = document.createElement('div')
       element.className = 'map-marker-outcome'
-      element.textContent = '▲'
+      // The glyph is wrapped rather than set as text: MapLibre writes its own
+      // transform on the marker element every frame to position it, so the pop
+      // keyframe has to scale a child or the marker would jump to the origin.
+      const glyph = document.createElement('span')
+      glyph.className = 'map-marker-outcome-glyph'
+      glyph.textContent = '▲'
+      element.append(glyph)
       element.title = `${area.target_year} serious or fatal crash recorded`
       // A pixel offset holds its distance from the rank badge at every zoom,
       // which a fixed offset in degrees does not.
