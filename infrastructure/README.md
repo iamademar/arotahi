@@ -85,10 +85,30 @@ az ad app federated-credential create --id "$APP_ID" --parameters "{
 }"
 ```
 
-If you rename the repo later, add a second credential for the new name before
-deleting the old one — an app can hold several, so you avoid a window where
-neither matches. GitHub redirects the old repo URL, but that redirect does **not**
-apply to OIDC token subjects.
+**If your account has immutable OIDC subject claims enabled**, GitHub sends the
+subject with numeric IDs appended — `repo:owner@<owner_id>/repo@<repo_id>:...` —
+and the plain-name credential above will NOT match. The login fails with
+`AADSTS700213`, and the error prints the exact subject GitHub sent, which is the
+quickest way to spot this. Add a second credential for that form:
+
+```bash
+IDS=$(gh api repos/"$REPO" --jq '"\(.owner.login)@\(.owner.id)/\(.name)@\(.id)"')
+
+az ad app federated-credential create --id "$APP_ID" --parameters "{
+  \"name\": \"arotahi-deploy-production-immutable\",
+  \"issuer\": \"https://token.actions.githubusercontent.com\",
+  \"subject\": \"repo:${IDS}:environment:production\",
+  \"audiences\": [\"api://AzureADTokenExchange\"]
+}"
+```
+
+Keep both credentials. An app can hold several, so the deploy works whichever
+form GitHub sends, and you are covered if the setting is toggled later.
+
+The immutable form also survives a repo rename, which the plain form does not —
+GitHub redirects the old repo URL, but that redirect does **not** apply to OIDC
+token subjects. If you rename and are using the plain form, add a credential for
+the new name before deleting the old one.
 
 ### 4. Configure GitHub
 
