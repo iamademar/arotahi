@@ -1,0 +1,13 @@
+# NZ Recurring Crash Area Prioritisation Assistant - CAS-only pipeline
+# Pinned to Python 3.11 (lightgbm / shap wheel availability).
+pandas==2.2.3
+numpy==1.26.4
+pyarrow==17.0.0
+scikit-learn==1.5.2
+lightgbm==4.5.0
+shap==0.46.0
+matplotlib==3.9.2
+jupyter==1.1.1
+nbconvert==7.16.4
+ipykernel==6.29.5
+pytest==8.3.3

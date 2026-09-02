@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NZ Crash Area Prioritisation</title>
+  <style>
+    :root {
+      --ink:#14241f; --muted:#64756e; --paper:#f4f7f3; --surface:#fff;
+      --line:#dce5df; --green:#0b6b53; --green-dark:#0d2d26;
+      --green-soft:#e5f2ed; --gold:#bd8530; --gold-soft:#fff8e8;
+      --red:#ab473c; --shadow:0 2px 10px rgba(20,45,36,.06);
+    }
+    * { box-sizing:border-box; }
+    html { background:var(--paper); }
+    body { margin:0; color:var(--ink); background:var(--paper); font:14px/1.4 Arial, Helvetica, sans-serif; }
+    button, input, select, textarea { font:inherit; }
+    button { cursor:pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline:3px solid rgba(11,107,83,.25); outline-offset:2px;
+    }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+    /* Header */
+    .topbar {
+      min-height:64px; display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+      padding:0 28px; color:#fff; background:var(--green-dark); border-bottom:1px solid #25463e;
+      position:sticky; top:0; z-index:30;
+    }
+    .brand { display:flex; align-items:center; gap:11px; }
+    .brand-mark { width:36px; height:36px; display:grid; place-items:center; color:#17352d; background:#d6b96b; border-radius:9px 9px 9px 3px; font-size:18px; }
+    .brand strong, .brand small { display:block; }
+    .brand strong { font-size:14px; }
+    .brand small { margin-top:1px; color:#adc0b9; font-size:11px; }
+    .nav { align-self:stretch; display:flex; gap:4px; }
+    .nav button { position:relative; padding:0 15px; color:#b8cac4; border:0; background:transparent; font-size:13px; font-weight:700; }
+    .nav button.active { color:#fff; }
+    .nav button.active::after { content:""; position:absolute; left:14px; right:14px; bottom:0; height:3px; background:#d6b96b; }
+    .nav .count { display:inline-grid; min-width:19px; height:19px; place-items:center; margin-left:4px; padding:0 5px; color:#fff; background:#35534b; border-radius:99px; font-size:10px; }
+    .header-actions { justify-self:end; display:flex; align-items:center; gap:8px; }
+    .prototype { padding:4px 8px; color:#dce8e3; border:1px solid #49645d; border-radius:99px; font-size:10px; }
+    .button { min-height:34px; display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:7px 12px; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:7px; font-weight:700; font-size:12px; }
+    .button:hover { background:#f5f8f6; }
+    .button.primary { color:#fff; background:var(--green); border-color:var(--green); }
+    .button.icon { width:31px; min-height:31px; padding:0; }
+    .topbar .button { color:#fff; background:transparent; border-color:#49645d; }
+
+    /* Page framing */
+    .workspace { width:min(1600px, calc(100% - 48px)); margin:0 auto; padding:30px 0 60px; }
+    .heading { display:flex; align-items:end; justify-content:space-between; gap:30px; margin-bottom:22px; }
+    .eyebrow { margin-bottom:5px; color:var(--green); text-transform:uppercase; letter-spacing:.13em; font-size:11px; font-weight:800; }
+    h1 { margin:0; font:600 clamp(30px, 3vw, 43px)/1.05 Georgia, serif; letter-spacing:-.025em; }
+    .heading p { margin:8px 0 0; color:var(--muted); }
+    .status { display:flex; align-items:center; gap:8px; padding:8px 12px; color:#315a4f; background:#fff; border:1px solid #cbdcd5; border-radius:99px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .status-dot { width:8px; height:8px; background:#31866c; border-radius:50%; box-shadow:0 0 0 4px #dff0ea; }
+    .warning {
+      display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:center; margin-bottom:14px; padding:12px 14px;
+      background:#fffaf0; border:1px solid #ead8ae; border-left:4px solid var(--gold); border-radius:8px;
+    }
+    .warning-icon { width:34px; height:34px; display:grid; place-items:center; color:#96691f; background:#fff1ce; border-radius:7px; }
+    .warning strong, .warning span { display:block; }
+    .warning strong { margin-bottom:2px; font-size:12px; }
+    .warning span { color:#6e624b; font-size:12px; }
+
+    /* Controls and metrics */
+    .controls {
+      display:grid; grid-template-columns:135px 125px minmax(160px,1fr) minmax(250px,2fr) auto;
+      gap:16px; align-items:end; padding:14px 16px; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow);
+    }
+    .field { display:grid; gap:6px; }
+    .field label, .capacity label { color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-size:10px; font-weight:800; }
+    select, input, textarea { width:100%; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:6px; }
+    select, input { height:34px; padding:0 9px; }
+    .capacity { padding:0 10px; }
+    .capacity-top, .capacity-scale { display:flex; justify-content:space-between; }
+    .capacity-top { margin-bottom:8px; }
+    .capacity-top strong { color:var(--green); font-size:12px; }
+    input[type="range"] { height:5px; padding:0; accent-color:var(--green); border:0; }
+    .capacity-scale { margin-top:4px; color:#87958f; font-size:9px; }
+    .metrics { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin:14px 0; }
+    .metric { min-height:102px; position:relative; padding:14px 15px; background:#fff; border:1px solid var(--line); border-radius:8px; }
+    .metric.accent { color:#fff; background:#0f5948; border-color:#0f5948; }
+    .metric-label { color:var(--muted); text-transform:uppercase; letter-spacing:.065em; font-size:10px; font-weight:800; }
+    .metric.accent .metric-label { color:#b9d8cf; }
+    .metric-value { margin-top:7px; font:650 25px/1 Georgia, serif; }
+    .metric-detail { position:absolute; left:15px; bottom:12px; color:#71817b; font-size:10px; }
+    .metric.accent .metric-detail { color:#c4ddd6; }
+
+    /* Main analysis area */
+    .analysis { display:grid; grid-template-columns:minmax(440px,.88fr) minmax(620px,1.12fr); gap:14px; }
+    .panel { min-width:0; overflow:hidden; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow); }
+    .panel-header { min-height:70px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:14px 16px; border-bottom:1px solid var(--line); }
+    .panel-title { display:flex; align-items:center; gap:8px; }
+    .panel h2 { margin:0; font-size:14px; }
+    .panel-header p { margin:4px 0 0; color:var(--muted); font-size:10px; }
+    .badge { display:inline-flex; align-items:center; padding:3px 7px; color:#53655e; background:#f7f9f7; border:1px solid var(--line); border-radius:99px; font-size:9px; font-weight:800; }
+    .badge.green { color:var(--green-dark); background:var(--green-soft); border-color:transparent; }
+
+    /* CSS map */
+    .map { position:relative; height:500px; overflow:hidden; background-color:#e9eee8; background-image:linear-gradient(26deg,transparent 48%,rgba(255,255,255,.35) 49%,rgba(255,255,255,.35) 51%,transparent 52%),radial-gradient(circle at 65% 18%,#dfe8df 0 11%,transparent 12%),radial-gradient(circle at 18% 75%,#dce6dc 0 14%,transparent 15%); }
+    .map::before { content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(86,109,96,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(86,109,96,.1) 1px,transparent 1px); background-size:28px 28px; }
+    .road { position:absolute; z-index:1; height:7px; background:rgba(255,255,255,.9); border:1px solid rgba(170,160,130,.55); border-radius:99px; transform-origin:left center; }
+    .road.one { width:83%; left:10%; top:47%; transform:rotate(-13deg); }
+    .road.two { width:68%; left:35%; top:13%; transform:rotate(63deg); }
+    .road.three { width:54%; left:10%; top:74%; transform:rotate(-37deg); }
+    .river { position:absolute; z-index:1; width:70%; height:90%; left:19%; top:-18%; border:9px solid transparent; border-right:6px solid rgba(108,167,184,.65); border-radius:50%; transform:rotate(14deg); }
+    .place { position:absolute; z-index:3; color:#61706a; font-size:10px; font-weight:700; text-shadow:0 1px #fff,0 -1px #fff,1px 0 #fff,-1px 0 #fff; pointer-events:none; }
+    .place.hamilton { left:50%; top:47%; color:#344a43; font-size:12px; }
+    .place.cambridge { left:67%; top:62%; }.place.raglan { left:16%; top:66%; }.place.te-awamutu { left:42%; top:78%; }.place.matamata { left:80%; top:74%; }
+    .cell { position:absolute; z-index:5; width:28px; height:28px; display:grid; place-items:center; transform:translate(-50%,-50%); color:#fff; background:var(--red); border:1px solid rgba(255,255,255,.9); box-shadow:0 1px 3px rgba(15,45,35,.18); font-size:9px; font-weight:800; }
+    .cell:hover, .cell.selected { z-index:8; outline:3px solid #123e33; outline-offset:2px; box-shadow:0 0 0 5px rgba(255,255,255,.85); }
+    .cell.medium { background:#d7a93d; opacity:.72; }.cell.low { background:#f1dca7; opacity:.72; }
+    .cell.unscored { background-color:#aab5b0; background-image:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,.65) 4px,rgba(255,255,255,.65) 6px); }
+    .outcome-marker { position:absolute; z-index:9; width:22px; height:22px; display:none; place-items:center; transform:translate(-50%,-50%); color:#fff; background:#3b3d45; border:2px solid #fff; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,.2); font-size:11px; }
+    .outcomes-on .outcome-marker { display:grid; }
+    .legend { position:absolute; z-index:10; left:14px; bottom:14px; width:165px; padding:10px 11px; background:rgba(255,255,255,.94); border:1px solid rgba(195,207,200,.9); border-radius:7px; box-shadow:0 3px 12px rgba(34,54,46,.11); }
+    .legend-title { color:#586a63; text-transform:uppercase; letter-spacing:.08em; font-size:9px; font-weight:800; }
+    .scale { display:grid; grid-template-columns:repeat(5,1fr); height:7px; margin-top:7px; overflow:hidden; border-radius:2px; }
+    .scale i:nth-child(1){background:#f1dca7}.scale i:nth-child(2){background:#e4c16a}.scale i:nth-child(3){background:#d7a93d}.scale i:nth-child(4){background:#c67737}.scale i:nth-child(5){background:#ab473c}
+    .scale-labels { display:flex; justify-content:space-between; margin:3px 0 8px; color:#74817c; font-size:8px; }
+    .legend-item { display:flex; align-items:center; gap:6px; margin-top:5px; color:#52625c; font-size:9px; }
+    .swatch-unscored { width:12px; height:12px; border:1px solid #98a49f; background:repeating-linear-gradient(45deg,#b3bdb8,#b3bdb8 3px,#eef1ef 3px,#eef1ef 5px); }
+    .context-note { position:absolute; z-index:10; right:13px; bottom:13px; padding:6px 8px; color:#66766f; background:rgba(255,255,255,.9); border-radius:5px; font-size:8px; }
+    .reveal { min-height:62px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:10px 15px; border-top:1px solid var(--line); }
+    .reveal-copy { display:flex; align-items:center; gap:9px; }
+    .reveal-copy .eye { color:#47645a; font-size:18px; }
+    .reveal-copy strong, .reveal-copy span { display:block; }
+    .reveal-copy strong { font-size:11px; }.reveal-copy span { margin-top:2px; color:#72817b; font-size:9px; }
+    .switch-label { display:flex; align-items:center; gap:8px; color:#4c5f58; font-size:10px; font-weight:800; white-space:nowrap; }
+    .switch-label input { width:18px; height:18px; accent-color:var(--green); }
+
+    /* Queue */
+    .queue-panel { display:flex; flex-direction:column; }
+    .search { display:flex; align-items:center; gap:7px; margin:10px 12px; padding-left:10px; color:#7b8984; border:1px solid var(--line); border-radius:7px; }
+    .search input { border:0; box-shadow:none; }
+    .table-wrap { flex:1; overflow:auto; border-top:1px solid #eef2ef; }
+    table { width:100%; min-width:690px; border-collapse:collapse; }
+    th { height:34px; padding:0 10px; text-align:left; color:#6f7d78; background:#f7f9f7; text-transform:uppercase; letter-spacing:.04em; font-size:9px; white-space:nowrap; }
+    td { height:55px; padding:7px 10px; border-bottom:1px solid #edf1ee; font-size:10px; }
+    tbody tr:hover, tbody tr.selected { background:#f2f8f5; }
+    .rank { font:700 14px Georgia, serif; color:#53665f; }
+    .area-link { display:grid; gap:2px; padding:0; text-align:left; color:inherit; background:transparent; border:0; }
+    .area-link strong { font-size:10px; }.area-link small { color:#7b8a84; font:8px ui-monospace, monospace; }
+    .probability { display:grid; gap:5px; min-width:90px; font-weight:800; }
+    .probability-track { width:74px; height:4px; overflow:hidden; background:#e8eeea; border-radius:99px; }
+    .probability-track i { display:block; height:100%; background:#bc6537; border-radius:inherit; }
+    .history-ok { color:#45645a; }.history-low { color:#805f21; background:#fff8e7; border-color:#e0c582; }
+    .outcome-cell { display:none; }.outcomes-on .outcome-cell { display:table-cell; }
+    .outcome-yes { color:#fff; background:#3b3d45; border-color:#3b3d45; }.outcome-no { color:#7a8882; }
+    .row-actions { display:flex; justify-content:flex-end; gap:4px; }
+    .row-actions button { width:28px; height:28px; padding:0; border:1px solid var(--line); border-radius:6px; background:#fff; }
+    .row-actions button.shortlisted { color:var(--green); background:var(--green-soft); }
+    .queue-footer { min-height:43px; display:flex; align-items:center; justify-content:space-between; padding:7px 12px; color:#71807a; border-top:1px solid var(--line); font-size:9px; }
+
+    /* Decision strip */
+    .decision-strip { margin-top:14px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:13px 16px; background:#e8f1ed; border:1px solid #ceddd7; border-radius:9px; }
+    .decision-title { color:#204d40; font-size:11px; font-weight:800; }
+    .steps { display:flex; align-items:center; gap:11px; }
+    .step { display:flex; align-items:center; gap:7px; }.step-number { width:21px; height:21px; display:grid; place-items:center; color:var(--green); background:#fff; border:1px solid #b8cec5; border-radius:50%; font-size:9px; font-weight:800; }
+    .step strong, .step small { display:block; }.step strong { font-size:10px; }.step small { color:#658078; font-size:8px; }.arrow { color:#87a39a; }
+
+    /* Detail drawer */
+    .backdrop { position:fixed; inset:0; z-index:40; display:none; background:rgba(7,24,19,.38); }
+    .backdrop.open { display:block; }
+    .drawer { position:absolute; top:0; right:0; width:min(600px,96vw); height:100%; overflow:auto; padding:24px; background:#fbfcfb; box-shadow:-10px 0 30px rgba(10,30,24,.16); }
+    .drawer-close { position:absolute; top:16px; right:16px; width:32px; height:32px; border:1px solid var(--line); background:#fff; border-radius:7px; font-size:18px; }
+    .drawer-kicker { color:var(--green); text-transform:uppercase; letter-spacing:.1em; font-size:9px; font-weight:800; }
+    .drawer h2 { margin:4px 0 2px; font:600 27px Georgia, serif; }.drawer-id { color:#77857f; font:9px ui-monospace, monospace; }
+    .score-block { margin-top:22px; display:grid; grid-template-columns:1fr auto; align-items:center; gap:16px; padding:18px; color:#fff; background:#0f5948; border-radius:10px; }
+    .score-block span, .score-block strong, .score-block small { display:block; }.score-block .label { color:#b9d8cf; text-transform:uppercase; letter-spacing:.08em; font-size:9px; font-weight:800; }.score-block .score { margin:5px 0; font:650 37px/1 Georgia, serif; }.score-block small { color:#c9e0d9; font-size:9px; }
+    .percentile { width:94px; height:94px; display:grid; place-content:center; text-align:center; border:6px solid rgba(255,255,255,.2); border-top-color:#e1c377; border-right-color:#e1c377; border-radius:50%; }.percentile strong { font:21px Georgia, serif; }.percentile span { color:#c9ded7; font-size:8px; }
+    .detail-warning { margin:10px 0 18px; padding:9px 11px; color:#6e6045; background:#fffaf0; border:1px solid #e8d3a3; border-radius:6px; font-size:9px; }
+    .detail-section { padding:18px 0; border-top:1px solid var(--line); }.detail-heading { display:flex; align-items:center; justify-content:space-between; margin-bottom:13px; }.detail-heading h3 { margin:0; font-size:12px; }.detail-heading span { color:#74837d; font-size:9px; }
+    .history-stats { display:grid; grid-template-columns:repeat(3,1fr); overflow:hidden; border:1px solid var(--line); border-radius:7px; }.history-stat { padding:10px 12px; background:#fff; }.history-stat + .history-stat { border-left:1px solid var(--line); }.history-stat strong,.history-stat span { display:block; }.history-stat strong { font:19px Georgia, serif; }.history-stat span { margin-top:2px; color:#74817c; font-size:8px; }
+    .timeline { height:90px; display:flex; align-items:end; gap:9px; margin-top:13px; padding:8px 15px 19px; border-left:1px solid #d6dfda; border-bottom:1px solid #d6dfda; }.timeline i { position:relative; flex:1; max-width:55px; min-height:8px; background:#5f8f7e; border-radius:3px 3px 0 0; }.timeline span { position:absolute; top:calc(100% + 5px); left:50%; transform:translateX(-50%); color:#788680; font-size:8px; font-style:normal; }
+    .factors { display:grid; gap:8px; }.factor { display:flex; align-items:center; gap:9px; padding:8px 10px; background:#fff; border:1px solid #e4ebe7; border-radius:6px; }.factor-mark { width:22px; height:22px; display:grid; place-items:center; color:var(--red); background:#faecea; border-radius:5px; font-weight:800; }.factor-mark.down { color:var(--green); background:var(--green-soft); }.factor p { flex:1; margin:0; }.factor strong { font-size:9px; }.factor small { float:right; color:#64766f; font-size:9px; }
+    .causal-note { color:#74827d; font-size:8px; }.limited-warning { display:none; margin-bottom:18px; padding:11px; color:#7b5b1b; background:#fff7e2; border:1px solid #e2cb8c; border-radius:7px; font-size:9px; }.limited-warning.show { display:block; }
+    textarea { min-height:88px; padding:9px 10px; resize:vertical; }.review-fields { display:grid; gap:13px; }.drawer-actions { display:flex; justify-content:flex-end; gap:8px; padding-top:16px; border-top:1px solid var(--line); }
+
+    @media (max-width:1150px) {
+      .topbar { grid-template-columns:1fr auto; }.nav { display:none; }
+      .controls { grid-template-columns:repeat(3,1fr); }.capacity { grid-column:span 2; }
+      .metrics { grid-template-columns:repeat(3,1fr); }.analysis { grid-template-columns:1fr; }.map { height:420px; }
+    }
+    @media (max-width:720px) {
+      .topbar { padding:10px 14px; }.brand small,.prototype { display:none; }.workspace { width:calc(100% - 24px); padding-top:20px; }
+      .heading { align-items:flex-start; flex-direction:column; gap:12px; }.heading h1 { font-size:31px; }
+      .controls { grid-template-columns:1fr 1fr; }.field.region,.capacity,.controls .more { grid-column:1/-1; }
+      .metrics { display:flex; overflow-x:auto; }.metric { min-width:180px; }.map { height:380px; }.context-note { display:none; }
+      .decision-strip,.reveal { align-items:flex-start; flex-direction:column; }.steps { display:grid; }.arrow { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">⌖</div><div><strong>Crash Area Review</strong><small>New Zealand · Analyst prototype</small></div></div>
+    <nav class="nav" aria-label="Primary navigation"><button class="active">Prioritisation</button><button>Shortlist <span class="count" id="shortlistCount">2</span></button><button>Model performance</button></nav>
+    <div class="header-actions"><span class="prototype">Prototype data</span><button class="button">⇩ Export brief</button></div>
+  </header>
+
+  <main class="workspace" id="app">
+    <section class="heading"><div><div class="eyebrow">2024 Waikato backtest</div><h1>Choose where to review first</h1><p>Rank historically active 1 km areas, then apply local knowledge before proposing any engineering review.</p></div><div class="status"><span class="status-dot"></span> Outcomes available</div></section>
+    <aside class="warning"><div class="warning-icon">⚠</div><div><strong>Scores cover previously observed crash areas only.</strong><span>An unscored square is <b>not assessed</b>—it is not evidence of low risk. The model does not account for traffic volume or recommend treatments.</span></div></aside>
+
+    <section class="controls" aria-label="Backtest settings">
+      <div class="field"><label for="mode">View</label><select id="mode"><option>Backtest</option><option>Demonstration</option></select></div>
+      <div class="field"><label for="year">Target year</label><select id="year"><option>2023</option><option selected>2024</option><option>2025</option></select></div>
+      <div class="field region"><label for="region">Region</label><select id="region"><option selected>Waikato</option><option>All New Zealand</option><option>Auckland</option><option>Bay of Plenty</option></select></div>
+      <div class="capacity"><div class="capacity-top"><label for="capacity">Review capacity</label><strong><span id="capacityValue">50</span> areas</strong></div><input id="capacity" type="range" min="10" max="100" step="10" value="50"><div class="capacity-scale"><span>10</span><span>100</span></div></div>
+      <button class="button more">☷ More filters <span class="badge">1</span></button>
+    </section>
+
+    <section class="metrics" aria-label="Backtest summary">
+      <article class="metric"><div class="metric-label">Eligible areas</div><div class="metric-value">3,700</div><div class="metric-detail">Crash recorded in 2019–2023</div></article>
+      <article class="metric"><div class="metric-label">Review queue</div><div class="metric-value" id="queueMetric">50</div><div class="metric-detail" id="queueShare">1.4% of eligible areas</div></article>
+      <article class="metric accent"><div class="metric-label">Severe-crash areas found</div><div class="metric-value">14.2%</div><div class="metric-detail">In the top 50 · 2024 backtest</div></article>
+      <article class="metric"><div class="metric-label">Lift over random review</div><div class="metric-value">7.1×</div><div class="metric-detail">Random review: about 2.0%</div></article>
+      <article class="metric"><div class="metric-label">Outcome coverage</div><div class="metric-value">85.2%</div><div class="metric-detail">14.8% were not assessable</div></article>
+    </section>
+
+    <section class="analysis">
+      <article class="panel">
+        <header class="panel-header"><div><div class="panel-title"><h2>Waikato eligible areas</h2><span class="badge">1 km grid</span></div><p>Rank colour indicates priority within Waikato—not road safety.</p></div><div><button class="button icon" title="Map layers">▱</button> <button class="button icon" title="Zoom in">+</button> <button class="button icon" title="Zoom out">−</button></div></header>
+        <div class="map" id="map">
+          <div class="road one"></div><div class="road two"></div><div class="road three"></div><div class="river"></div>
+          <span class="place hamilton">Hamilton</span><span class="place cambridge">Cambridge</span><span class="place raglan">Raglan</span><span class="place te-awamutu">Te Awamutu</span><span class="place matamata">Matamata</span>
+          <div id="mapCells"></div>
+          <aside class="legend"><div class="legend-title">Regional priority</div><div class="scale"><i></i><i></i><i></i><i></i><i></i></div><div class="scale-labels"><span>Lower</span><span>Top ranked</span></div><div class="legend-item"><span class="swatch-unscored"></span> Not assessed</div><div class="legend-item outcome-legend" hidden>▲ 2024 serious/fatal outcome</div></aside>
+          <div class="context-note">ⓘ Roads shown for orientation only; they are not model inputs.</div>
+        </div>
+        <footer class="reveal"><div class="reveal-copy"><span class="eye" id="eyeIcon">◉</span><div><strong id="revealTitle">Evaluate the historical ranking</strong><span id="revealText">Keep outcomes hidden while reviewing the model’s queue.</span></div></div><label class="switch-label"><input id="revealOutcomes" type="checkbox"> Reveal outcomes</label></footer>
+      </article>
+
+      <article class="panel queue-panel">
+        <header class="panel-header"><div><div class="panel-title"><h2>Top <span id="queueTitle">50</span> review queue</h2><span class="badge green">Ranked</span></div><p>Scores are frozen from records available before 2024.</p></div><button class="button icon" title="Filter queue">☷</button></header>
+        <label class="search"><span>⌕</span><span class="sr-only">Find cell or place</span><input id="search" type="search" placeholder="Find cell or place"></label>
+        <div class="table-wrap"><table><thead><tr><th>Rank ↓</th><th>Area</th><th>Estimated probability</th><th>History</th><th class="outcome-cell">2024</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody id="queueBody"></tbody></table></div>
+        <footer class="queue-footer"><span>Showing representative areas from a queue of <span id="queueFooterCount">50</span></span><button class="button">View full queue →</button></footer>
+      </article>
+    </section>
+
+    <section class="decision-strip"><div class="decision-title">☑ Model ranking and analyst decision remain separate</div><div class="steps"><div class="step"><span class="step-number">1</span><div><strong>Prioritise</strong><small>Model ranks eligible areas</small></div></div><span class="arrow">›</span><div class="step"><span class="step-number">2</span><div><strong>Inspect</strong><small>Review local context and road data</small></div></div><span class="arrow">›</span><div class="step"><span class="step-number">3</span><div><strong>Decide</strong><small>Analyst records whether to progress</small></div></div></div></section>
+  </main>
+
+  <div class="backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <aside class="drawer"><button class="drawer-close" id="closeDrawer" aria-label="Close area detail">×</button><div class="drawer-kicker" id="drawerRank"></div><h2 id="drawerTitle"></h2><div class="drawer-id" id="drawerId"></div>
+      <div class="score-block"><div><span class="label">Estimated probability</span><strong class="score" id="drawerScore"></strong><small>At least one reported serious/fatal crash in 2024</small></div><div class="percentile"><strong id="drawerPercentile"></strong><span>percentile<br>in Waikato</span></div></div>
+      <div class="detail-warning">ⓘ This ranks the area for review. It is not an engineering finding about every road inside the square.</div>
+      <section class="detail-section"><div class="detail-heading"><h3>Five-year crash history</h3><span>2019–2023</span></div><div class="history-stats"><div class="history-stat"><strong id="drawerCrashes"></strong><span>All crashes</span></div><div class="history-stat"><strong id="drawerSevere"></strong><span>Serious/fatal</span></div><div class="history-stat"><strong id="drawerRecent"></strong><span>Most recent</span></div></div><div class="timeline"><i style="height:36%"><span>2019</span></i><i style="height:61%"><span>2020</span></i><i style="height:44%"><span>2021</span></i><i style="height:78%"><span>2022</span></i><i style="height:66%"><span>2023</span></i></div></section>
+      <section class="detail-section"><div class="detail-heading"><h3>Factors contributing to this score</h3><span title="Associations, not causes">ⓘ</span></div><div class="factors" id="drawerFactors"></div><p class="causal-note">✦ These factors help explain the model score; they do not identify what caused crashes or what should be fixed.</p></section>
+      <div class="limited-warning" id="limitedWarning"><b>⚠ Limited crash history</b><br>This estimate uses fewer than three prior records and is less stable. Keep it in the queue, but interpret it cautiously.</div>
+      <section class="detail-section"><div class="detail-heading"><h3>Analyst review</h3></div><div class="review-fields"><div class="field"><label for="reviewStatus">Review status</label><select id="reviewStatus"><option>Not reviewed</option><option>Desktop review</option><option>Additional road data required</option><option>Engineering review proposed</option><option>Do not progress</option></select></div><div class="field"><label for="notes">Notes or follow-up question</label><textarea id="notes" placeholder="Record local context, missing information, or why this area should progress…"></textarea></div></div></section>
+      <div class="drawer-actions"><button class="button">▤ Open model inputs</button><button class="button primary" id="drawerShortlist">＋ Add to shortlist</button></div>
+    </aside>
+  </div>
+
+  <script>
+    const areas = [
+      {rank:1,id:'NZTM1K-1801-5814',place:'Hamilton Central',p:.909,percentile:99.9,crashes:78,severe:9,recent:2023,history:'Sufficient',outcome:true,left:47,top:43,factors:[['Crashes in this area, 2019–2023','78','up'],['Serious/fatal crashes, 2019–2023','9','up'],['Crashes in neighbouring areas','High','up'],['Open-road crash history','Low','down']]},
+      {rank:2,id:'NZTM1K-1800-5813',place:'Hamilton South',p:.714,percentile:99.7,crashes:53,severe:7,recent:2023,history:'Sufficient',outcome:false,left:44,top:49,factors:[['Crashes in this area, 2019–2023','53','up'],['Pedestrian-involved crash share','Elevated','up'],['Crashes in neighbouring areas','High','up'],['Time since most recent severe crash','2 years','down']]},
+      {rank:3,id:'NZTM1K-1798-5818',place:'Te Rapa',p:.642,percentile:99.5,crashes:46,severe:6,recent:2023,history:'Sufficient',outcome:true,left:40,top:35,factors:[['Truck-involved crash share','Elevated','up'],['Crashes in neighbouring areas','High','up'],['Serious/fatal crashes, 2019–2023','6','up'],['Street lighting observed','Mostly lit','down']]},
+      {rank:4,id:'NZTM1K-1812-5807',place:'Cambridge North',p:.481,percentile:99.2,crashes:31,severe:5,recent:2023,history:'Sufficient',outcome:true,left:64,top:58,factors:[['Open-road crash share','High','up'],['Motorcycle-involved crashes','5','up'],['Crashes in neighbouring areas','Moderate','up'],['All crashes in most recent year','3','down']]},
+      {rank:5,id:'NZTM1K-1776-5801',place:'Raglan Road',p:.378,percentile:98.9,crashes:18,severe:4,recent:2022,history:'Sufficient',outcome:false,left:24,top:62,factors:[['Open-road crash share','High','up'],['Serious/fatal crash share','22%','up'],['Motorcycle-involved crashes','4','up'],['Most recent crash','2022','down']]},
+      {rank:6,id:'NZTM1K-1794-5791',place:'Te Awamutu East',p:.291,percentile:98.5,crashes:15,severe:3,recent:2023,history:'Sufficient',outcome:false,left:40,top:73,factors:[['Recent crash-count trend','Increasing','up'],['Wet-surface crash share','Elevated','up'],['Crashes in neighbouring areas','Moderate','up'],['Serious/fatal crashes, 2019–2023','3','down']]},
+      {rank:7,id:'NZTM1K-1789-5832',place:'Ngaruawahia',p:.237,percentile:98.1,crashes:12,severe:2,recent:2023,history:'Sufficient',outcome:true,left:35,top:22,factors:[['State-highway crash share','High','up'],['Crashes in neighbouring areas','High','up'],['Open-road crash history','Mixed','up'],['Prior records used','12','down']]},
+      {rank:8,id:'NZTM1K-1828-5793',place:'Matamata West',p:.191,percentile:97.8,crashes:2,severe:1,recent:2021,history:'Limited',outcome:false,left:77,top:70,factors:[['Serious/fatal crash share','50%','up'],['Crashes in neighbouring areas','Moderate','up'],['Prior records used','Only 2','down'],['Most recent crash','2021','down']]}
+    ];
+    const extras = [[53,36,'medium'],[57,48,'low'],[68,36,'medium'],[31,43,'low'],[54,66,'low'],[70,78,'unscored'],[18,48,'unscored'],[83,51,'unscored'],[31,83,'unscored']];
+    const shortlisted = new Set([areas[0].id, areas[3].id]);
+    let selected = areas[0];
+    const $ = id => document.getElementById(id);
+    const esc = text => String(text).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+
+    function renderMap(){
+      $('mapCells').innerHTML = extras.map(([left,top,type]) => `<button class="cell ${type}" style="left:${left}%;top:${top}%" aria-label="${type==='unscored'?'Not assessed':type+' priority'} cell"></button>`).join('') +
+        areas.map(a => `<button class="cell ranked ${a.id===selected.id?'selected':''}" style="left:${a.left}%;top:${a.top}%;opacity:${.48+a.p*.52}" data-id="${a.id}" aria-label="Rank ${a.rank}, ${esc(a.place)}">${a.rank<=5?a.rank:''}</button>${a.outcome?`<span class="outcome-marker" style="left:calc(${a.left}% + 22px);top:calc(${a.top}% - 9px)">▲</span>`:''}`).join('');
+      document.querySelectorAll('.cell.ranked').forEach(b => b.onclick = () => openDrawer(b.dataset.id));
+    }
+    function renderTable(filter=''){
+      const term = filter.trim().toLowerCase();
+      $('queueBody').innerHTML = areas.filter(a => !term || a.place.toLowerCase().includes(term) || a.id.toLowerCase().includes(term)).map(a => `<tr class="${a.id===selected.id?'selected':''}">
+        <td class="rank">${a.rank}</td><td><button class="area-link" data-detail="${a.id}"><strong>${esc(a.place)}</strong><small>${a.id}</small></button></td>
+        <td><div class="probability"><span>${Math.round(a.p*100)}%</span><div class="probability-track"><i style="width:${Math.max(4,a.p*100)}%"></i></div></div></td>
+        <td>${a.history==='Limited'?'<span class="badge history-low">Limited</span>':'<span class="history-ok">✓ Sufficient</span>'}</td>
+        <td class="outcome-cell">${a.outcome?'<span class="badge outcome-yes">Occurred</span>':'<span class="outcome-no">None</span>'}</td>
+        <td><div class="row-actions"><button class="${shortlisted.has(a.id)?'shortlisted':''}" data-shortlist="${a.id}" title="Add or remove shortlist">${shortlisted.has(a.id)?'✓':'＋'}</button><button data-detail="${a.id}" title="Inspect area">›</button></div></td></tr>`).join('');
+      document.querySelectorAll('[data-detail]').forEach(b => b.onclick = () => openDrawer(b.dataset.detail));
+      document.querySelectorAll('[data-shortlist]').forEach(b => b.onclick = e => { e.stopPropagation(); toggleShortlist(b.dataset.shortlist); });
+    }
+    function updateShortlist(){ $('shortlistCount').textContent = shortlisted.size; renderTable($('search').value); if(selected) $('drawerShortlist').textContent = shortlisted.has(selected.id)?'✓ Shortlisted':'＋ Add to shortlist'; }
+    function toggleShortlist(id){ shortlisted.has(id)?shortlisted.delete(id):shortlisted.add(id); updateShortlist(); }
+    function openDrawer(id){
+      selected = areas.find(a => a.id===id); renderMap(); renderTable($('search').value);
+      $('drawerRank').textContent = `Regional rank #${selected.rank}`; $('drawerTitle').textContent = selected.place; $('drawerId').textContent = `${selected.id} · 1 km recurring crash area`;
+      $('drawerScore').textContent = `${(selected.p*100).toFixed(1)}%`; $('drawerPercentile').textContent = selected.percentile; $('drawerCrashes').textContent = selected.crashes; $('drawerSevere').textContent = selected.severe; $('drawerRecent').textContent = selected.recent;
+      $('drawerFactors').innerHTML = selected.factors.map(([label,value,tone]) => `<div class="factor"><span class="factor-mark ${tone==='down'?'down':''}">${tone==='down'?'−':'+'}</span><p><strong>${esc(label)}</strong><small>${esc(value)}</small></p></div>`).join('');
+      $('limitedWarning').classList.toggle('show',selected.history==='Limited'); $('drawerShortlist').textContent = shortlisted.has(selected.id)?'✓ Shortlisted':'＋ Add to shortlist'; $('backdrop').classList.add('open');
+    }
+    function closeDrawer(){ $('backdrop').classList.remove('open'); }
+    $('capacity').oninput = e => { const v=e.target.value; $('capacityValue').textContent=v; $('queueMetric').textContent=v; $('queueTitle').textContent=v; $('queueFooterCount').textContent=v; $('queueShare').textContent=`${(v/3700*100).toFixed(1)}% of eligible areas`; };
+    $('revealOutcomes').onchange = e => { const on=e.target.checked; $('app').classList.toggle('outcomes-on',on); $('revealTitle').textContent=on?'2024 outcomes revealed':'Evaluate the historical ranking'; $('revealText').textContent=on?'Actual severe-crash cells are now marked separately.':'Keep outcomes hidden while reviewing the model’s queue.'; $('eyeIcon').textContent=on?'◉':'⊘'; document.querySelector('.outcome-legend').hidden=!on; };
+    $('search').oninput = e => renderTable(e.target.value); $('closeDrawer').onclick=closeDrawer; $('backdrop').onclick=e => { if(e.target===$('backdrop')) closeDrawer(); }; $('drawerShortlist').onclick=()=>toggleShortlist(selected.id); document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
+    renderMap(); renderTable(); updateShortlist();
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# Standalone serving stack for the CAS crash-area prediction API.
+#
+#   python3.11 -m venv .venv && .venv/bin/pip install -r requirements.txt
+#
+# The scikit-learn and lightgbm pins are NOT cosmetic. The saved model bundle
+# unpickles estimator objects from those libraries; a version skew either fails
+# to load or, worse, loads and scores differently. They must match the versions
+# that trained the artefact. tests/test_api.py proves they do, by comparing
+# served probabilities against the frozen backtest scores.
+scikit-learn==1.5.2
+lightgbm==4.5.0
+pandas==2.2.3
+numpy==1.26.4
+pyarrow==17.0.0
+joblib==1.4.2
+
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# Testing
+httpx==0.28.1
+pytest==8.3.3

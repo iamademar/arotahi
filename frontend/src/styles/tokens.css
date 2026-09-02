@@ -1,0 +1,118 @@
+/* Design tokens from the NZTA design system in design-system/ — the values are
+   taken verbatim from the approved canvas
+   (design-system/Arotahi - NZ Crash Area Prioritiser.html), and theme.md
+   describes the intent behind them.
+
+   The look is "civic transport utility": navy for authority, lime for
+   emphasis, square corners, and no shadows except on transient overlays. */
+:root {
+  /* Brand */
+  --color-brand-navy: #004771;
+  --color-brand-navy-dark: #003656;
+  --color-brand-lime: #afbd22;
+  --color-brand-lime-dark: #93a01c;
+
+  /* Action and links. Lime is 2.07:1 on white, so it is never used for small
+     text — only for large indicators, borders and badges. */
+  --color-action: #0079c1;
+  --color-action-hover: #00619b;
+  --color-action-subtle: #e6f2f9;
+  --color-link: #236fa6;
+
+  /* Text */
+  --color-text: #4f4949;
+  --color-text-secondary: #4c4c4c;
+  --color-text-inverse: #ffffff;
+
+  /* Surfaces and lines */
+  --color-background: #f8f8f8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f2f4f7;
+  --color-surface-subtle: #efefef;
+  --color-border: #cacaca;
+  --color-border-input: #949494;
+
+  /* Semantic status */
+  --color-danger: #b3251e;
+  --color-danger-surface: #fbeceb;
+  --color-warning: #a25c00;
+  --color-warning-surface: #fdf3e6;
+
+  /* Five-step priority scale for the map fill and its legend. These must stay
+     identical to BAND_COLOURS in src/geo/cellGeometry.ts: MapLibre paint
+     expressions cannot read CSS custom properties, so the ramp is declared
+     twice and the two copies have to move together. */
+  --scale-1: #fbe9e7;
+  --scale-2: #f3b9b2;
+  --scale-3: #e58074;
+  --scale-4: #cf4b3c;
+  --scale-5: #b3251e;
+
+  /* Typography */
+  --font-sans: 'Open Sans', 'Avenir Next', Avenir, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, monospace;
+
+  --font-size-display: 36px;
+  --line-height-display: 44px;
+  --font-size-page: 32px;
+  --line-height-page: 40px;
+  --font-size-section: 24px;
+  --line-height-section: 32px;
+  --font-size-component: 20px;
+  --line-height-component: 28px;
+  --font-size-body-lg: 18px;
+  --line-height-body-lg: 28px;
+  --font-size-body: 16px;
+  --line-height-body: 24px;
+  --font-size-small: 14px;
+  --line-height-small: 20px;
+  --font-size-label: 12px;
+  --line-height-label: 16px;
+
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --letter-spacing-badge: 0.08em;
+
+  /* Spacing — 8px system */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Shape. The portal is square and shadow-free by design; the one shadow
+     exists only for overlays (drawer, tooltip) that must read above the page. */
+  --radius-none: 0;
+  --border-width: 1px;
+  --border-width-thick: 3px;
+  --focus-width: 3px;
+  --focus-offset: 2px;
+  --shadow-overlay: 0 2px 8px rgba(0, 0, 0, 0.18);
+
+  /* Control sizing */
+  --control-height: 44px;
+  --control-height-sm: 36px;
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 150ms;
+  --duration-slow: 180ms;
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-hover:
+    background-color var(--duration-base) var(--easing-standard),
+    color var(--duration-base) var(--easing-standard),
+    border-color var(--duration-base) var(--easing-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}

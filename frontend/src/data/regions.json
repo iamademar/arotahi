@@ -1,0 +1,134 @@
+{
+  "Auckland Region": [
+    "Auckland"
+  ],
+  "Bay of Plenty Region": [
+    "Kawerau District",
+    "Ōpōtiki District",
+    "Rotorua District",
+    "Taupo District",
+    "Tauranga City",
+    "Western Bay of Plenty District",
+    "Whakatane District"
+  ],
+  "Canterbury Region": [
+    "Ashburton District",
+    "Christchurch City",
+    "Hurunui District",
+    "Kaikoura District",
+    "Mackenzie District",
+    "Selwyn District",
+    "Timaru District",
+    "Waimakariri District",
+    "Waimate District",
+    "Waitaki District"
+  ],
+  "Gisborne Region": [
+    "Gisborne District"
+  ],
+  "Hawke's Bay Region": [
+    "Central Hawke's Bay District",
+    "Hastings District",
+    "Napier City",
+    "Rangitikei District",
+    "Taupo District",
+    "Wairoa District"
+  ],
+  "Manawatū-Whanganui Region": [
+    "Chatham Islands Territory",
+    "Horowhenua District",
+    "Manawatu District",
+    "Palmerston North City",
+    "Rangitikei District",
+    "Ruapehu District",
+    "Stratford District",
+    "Tararua District",
+    "Waitomo District",
+    "Whanganui District"
+  ],
+  "Marlborough Region": [
+    "Marlborough District"
+  ],
+  "Nelson Region": [
+    "Nelson City"
+  ],
+  "Northland Region": [
+    "Far North District",
+    "Kaipara District",
+    "Whangarei District"
+  ],
+  "Otago Region": [
+    "Central Otago District",
+    "Clutha District",
+    "Dunedin City",
+    "Queenstown-Lakes District",
+    "Waitaki District"
+  ],
+  "Southland Region": [
+    "Gore District",
+    "Invercargill City",
+    "Southland District"
+  ],
+  "Taranaki Region": [
+    "New Plymouth District",
+    "South Taranaki District",
+    "Stratford District"
+  ],
+  "Tasman Region": [
+    "Tasman District"
+  ],
+  "Unknown": [
+    "Auckland",
+    "Central Hawke's Bay District",
+    "Dunedin City",
+    "Far North District",
+    "Grey District",
+    "Hastings District",
+    "Horowhenua District",
+    "Invercargill City",
+    "Kaikoura District",
+    "Kaipara District",
+    "Kapiti Coast District",
+    "Manawatu District",
+    "Marlborough District",
+    "Masterton District",
+    "New Plymouth District",
+    "South Wairarapa District",
+    "Southland District",
+    "Tasman District",
+    "Tauranga City",
+    "Thames-Coromandel District",
+    "Unknown",
+    "Western Bay of Plenty District",
+    "Whangarei District"
+  ],
+  "Waikato Region": [
+    "Hamilton City",
+    "Hauraki District",
+    "Matamata-Piako District",
+    "Ōtorohanga District",
+    "Rotorua District",
+    "South Waikato District",
+    "Taupo District",
+    "Thames-Coromandel District",
+    "Waikato District",
+    "Waipa District",
+    "Waitomo District"
+  ],
+  "Wellington Region": [
+    "Carterton District",
+    "Chatham Islands Territory",
+    "Kapiti Coast District",
+    "Lower Hutt City",
+    "Masterton District",
+    "Porirua City",
+    "South Wairarapa District",
+    "Upper Hutt City",
+    "Wellington City"
+  ],
+  "West Coast Region": [
+    "Buller District",
+    "Grey District",
+    "Westland District"
+  ]
+}

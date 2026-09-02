@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Exported from the ml project; rebuild with scripts/export_serving_data.py
+data/*.parquet
+data/*.csv
+data/*.json
+data/*.md
+
+# Built by scripts/train_and_save.py
+models/*.joblib
+!models/.gitkeep

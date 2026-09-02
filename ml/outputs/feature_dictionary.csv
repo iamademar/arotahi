@@ -1,0 +1,179 @@
+name,group,lookback_window,dtype,missing_rule
+dark_count_1y,crash conditions,t-1,float64,zero-filled
+dark_count_3y,crash conditions,t-3 to t-1,float64,zero-filled
+dark_count_5y,crash conditions,t-5 to t-1,int64,zero-filled
+dark_share_1y,crash conditions,t-1,float64,zero-filled
+dark_share_3y,crash conditions,t-3 to t-1,float64,zero-filled
+dark_share_5y,crash conditions,t-5 to t-1,float64,zero-filled
+holiday_count_1y,crash conditions,t-1,float64,zero-filled
+holiday_count_3y,crash conditions,t-3 to t-1,float64,zero-filled
+holiday_count_5y,crash conditions,t-5 to t-1,int8,zero-filled
+holiday_share_1y,crash conditions,t-1,float64,zero-filled
+holiday_share_3y,crash conditions,t-3 to t-1,float64,zero-filled
+holiday_share_5y,crash conditions,t-5 to t-1,float64,zero-filled
+roadworks_count_1y,crash conditions,t-1,float64,zero-filled
+roadworks_count_3y,crash conditions,t-3 to t-1,float64,zero-filled
+roadworks_count_5y,crash conditions,t-5 to t-1,int8,zero-filled
+roadworks_share_1y,crash conditions,t-1,float64,zero-filled
+roadworks_share_3y,crash conditions,t-3 to t-1,float64,zero-filled
+roadworks_share_5y,crash conditions,t-5 to t-1,float64,zero-filled
+sh_count_1y,crash conditions,t-1,float64,zero-filled
+sh_count_3y,crash conditions,t-3 to t-1,float64,zero-filled
+sh_count_5y,crash conditions,t-5 to t-1,int64,zero-filled
+sh_share_1y,crash conditions,t-1,float64,zero-filled
+sh_share_3y,crash conditions,t-3 to t-1,float64,zero-filled
+sh_share_5y,crash conditions,t-5 to t-1,float64,zero-filled
+slipflood_count_1y,crash conditions,t-1,float64,zero-filled
+slipflood_count_3y,crash conditions,t-3 to t-1,float64,zero-filled
+slipflood_count_5y,crash conditions,t-5 to t-1,int8,zero-filled
+slipflood_share_1y,crash conditions,t-1,float64,zero-filled
+slipflood_share_3y,crash conditions,t-3 to t-1,float64,zero-filled
+slipflood_share_5y,crash conditions,t-5 to t-1,float64,zero-filled
+unsealed_count_1y,crash conditions,t-1,float64,zero-filled
+unsealed_count_3y,crash conditions,t-3 to t-1,float64,zero-filled
+unsealed_count_5y,crash conditions,t-5 to t-1,int8,zero-filled
+unsealed_share_1y,crash conditions,t-1,float64,zero-filled
+unsealed_share_3y,crash conditions,t-3 to t-1,float64,zero-filled
+unsealed_share_5y,crash conditions,t-5 to t-1,float64,zero-filled
+wet_surface_count_1y,crash conditions,t-1,float64,zero-filled
+wet_surface_count_3y,crash conditions,t-3 to t-1,float64,zero-filled
+wet_surface_count_5y,crash conditions,t-5 to t-1,int8,zero-filled
+wet_surface_share_1y,crash conditions,t-1,float64,zero-filled
+wet_surface_share_3y,crash conditions,t-3 to t-1,float64,zero-filled
+wet_surface_share_5y,crash conditions,t-5 to t-1,float64,zero-filled
+wet_weather_count_1y,crash conditions,t-1,float64,zero-filled
+wet_weather_count_3y,crash conditions,t-3 to t-1,float64,zero-filled
+wet_weather_count_5y,crash conditions,t-5 to t-1,int64,zero-filled
+wet_weather_share_1y,crash conditions,t-1,float64,zero-filled
+wet_weather_share_3y,crash conditions,t-3 to t-1,float64,zero-filled
+wet_weather_share_5y,crash conditions,t-5 to t-1,float64,zero-filled
+crash_count_1y,crash-frequency history,t-1,float64,zero-filled
+crash_count_3y,crash-frequency history,t-3 to t-1,float64,zero-filled
+crash_count_5y,crash-frequency history,t-5 to t-1,int64,zero-filled
+national_volume_share_5y,crash-frequency history,t-5 to t-1,float64,zero-filled
+records_used,crash-frequency history,t-5 to t-1,int64,zero-filled
+share_years_with_crash_5y,crash-frequency history,t-5 to t-1,float64,zero-filled
+years_since_last_crash,crash-frequency history,t-5 to t-1,int16,zero-filled
+years_since_last_crash_missing,crash-frequency history,t-5 to t-1,int8,zero-filled
+years_with_crash_1y,crash-frequency history,t-1,float64,zero-filled
+years_with_crash_3y,crash-frequency history,t-3 to t-1,float64,zero-filled
+years_with_crash_5y,crash-frequency history,t-5 to t-1,int64,zero-filled
+yoy_trend,crash-frequency history,t-5 to t-1,float64,zero-filled
+distinct_coords_1y,data quality,t-1,float64,zero-filled
+distinct_coords_3y,data quality,t-3 to t-1,float64,zero-filled
+distinct_coords_5y,data quality,t-5 to t-1,int64,zero-filled
+lanes_invalid_count_1y,data quality,t-1,float64,zero-filled
+lanes_invalid_count_3y,data quality,t-3 to t-1,float64,zero-filled
+lanes_invalid_count_5y,data quality,t-5 to t-1,int8,zero-filled
+lanes_invalid_share_1y,data quality,t-1,float64,zero-filled
+lanes_invalid_share_3y,data quality,t-3 to t-1,float64,zero-filled
+lanes_invalid_share_5y,data quality,t-5 to t-1,float64,zero-filled
+lanes_modal_1y_missing,data quality,t-5 to t-1,int8,zero-filled
+lanes_modal_3y_missing,data quality,t-5 to t-1,int8,zero-filled
+lanes_modal_5y_missing,data quality,t-5 to t-1,int8,zero-filled
+region_missing_count_1y,data quality,t-1,float64,zero-filled
+region_missing_count_3y,data quality,t-3 to t-1,float64,zero-filled
+region_missing_count_5y,data quality,t-5 to t-1,int64,zero-filled
+region_missing_share_1y,data quality,t-1,float64,zero-filled
+region_missing_share_3y,data quality,t-3 to t-1,float64,zero-filled
+region_missing_share_5y,data quality,t-5 to t-1,float64,zero-filled
+speed_invalid_count_1y,data quality,t-1,float64,zero-filled
+speed_invalid_count_3y,data quality,t-3 to t-1,float64,zero-filled
+speed_invalid_count_5y,data quality,t-5 to t-1,int8,zero-filled
+speed_invalid_share_1y,data quality,t-1,float64,zero-filled
+speed_invalid_share_3y,data quality,t-3 to t-1,float64,zero-filled
+speed_invalid_share_5y,data quality,t-5 to t-1,float64,zero-filled
+speed_median_1y_missing,data quality,t-5 to t-1,int8,zero-filled
+speed_median_3y_missing,data quality,t-5 to t-1,int8,zero-filled
+speed_median_5y_missing,data quality,t-5 to t-1,int8,zero-filled
+tla_missing_count_1y,data quality,t-1,float64,zero-filled
+tla_missing_count_3y,data quality,t-3 to t-1,float64,zero-filled
+tla_missing_count_5y,data quality,t-5 to t-1,int8,zero-filled
+tla_missing_share_1y,data quality,t-1,float64,zero-filled
+tla_missing_share_3y,data quality,t-3 to t-1,float64,zero-filled
+tla_missing_share_5y,data quality,t-5 to t-1,float64,zero-filled
+unknown_field_count_1y,data quality,t-1,float64,zero-filled
+unknown_field_count_3y,data quality,t-3 to t-1,float64,zero-filled
+unknown_field_count_5y,data quality,t-5 to t-1,int64,zero-filled
+unknown_field_share_1y,data quality,t-1,float64,zero-filled
+unknown_field_share_3y,data quality,t-3 to t-1,float64,zero-filled
+unknown_field_share_5y,data quality,t-5 to t-1,float64,zero-filled
+lanes_modal_1y,other,t-1,float64,zero-filled
+lanes_modal_3y,other,t-3 to t-1,float64,zero-filled
+lanes_modal_5y,other,t-5 to t-1,float64,zero-filled
+speed_median_1y,other,t-1,float64,zero-filled
+speed_median_3y,other,t-3 to t-1,float64,zero-filled
+speed_median_5y,other,t-5 to t-1,float64,zero-filled
+modal_roadCharacter,road context / geography,t-5 to t-1,object,Unknown category
+modal_roadCharacter_share,road context / geography,t-5 to t-1,float64,zero-filled
+modal_roadLane,road context / geography,t-5 to t-1,object,Unknown category
+modal_roadLane_share,road context / geography,t-5 to t-1,float64,zero-filled
+modal_roadSurface,road context / geography,t-5 to t-1,object,Unknown category
+modal_roadSurface_share,road context / geography,t-5 to t-1,float64,zero-filled
+modal_speed,road context / geography,t-5 to t-1,object,Unknown category
+modal_speed_share,road context / geography,t-5 to t-1,float64,zero-filled
+modal_streetLight,road context / geography,t-5 to t-1,object,Unknown category
+modal_streetLight_share,road context / geography,t-5 to t-1,float64,zero-filled
+modal_trafficControl,road context / geography,t-5 to t-1,object,Unknown category
+modal_trafficControl_share,road context / geography,t-5 to t-1,float64,zero-filled
+modal_urban,road context / geography,t-5 to t-1,object,Unknown category
+modal_urban_share,road context / geography,t-5 to t-1,float64,zero-filled
+region,road context / geography,t-5 to t-1,object,Unknown category
+region_volume_share_5y,road context / geography,t-5 to t-1,float64,zero-filled
+tla,road context / geography,t-5 to t-1,object,Unknown category
+bicycle_count_1y,road users,t-1,float64,zero-filled
+bicycle_count_3y,road users,t-3 to t-1,float64,zero-filled
+bicycle_count_5y,road users,t-5 to t-1,int8,zero-filled
+bicycle_share_1y,road users,t-1,float64,zero-filled
+bicycle_share_3y,road users,t-3 to t-1,float64,zero-filled
+bicycle_share_5y,road users,t-5 to t-1,float64,zero-filled
+bus_count_1y,road users,t-1,float64,zero-filled
+bus_count_3y,road users,t-3 to t-1,float64,zero-filled
+bus_count_5y,road users,t-5 to t-1,int64,zero-filled
+bus_share_1y,road users,t-1,float64,zero-filled
+bus_share_3y,road users,t-3 to t-1,float64,zero-filled
+bus_share_5y,road users,t-5 to t-1,float64,zero-filled
+motorcycle_count_1y,road users,t-1,float64,zero-filled
+motorcycle_count_3y,road users,t-3 to t-1,float64,zero-filled
+motorcycle_count_5y,road users,t-5 to t-1,int8,zero-filled
+motorcycle_share_1y,road users,t-1,float64,zero-filled
+motorcycle_share_3y,road users,t-3 to t-1,float64,zero-filled
+motorcycle_share_5y,road users,t-5 to t-1,float64,zero-filled
+pedestrian_count_1y,road users,t-1,float64,zero-filled
+pedestrian_count_3y,road users,t-3 to t-1,float64,zero-filled
+pedestrian_count_5y,road users,t-5 to t-1,int64,zero-filled
+pedestrian_share_1y,road users,t-1,float64,zero-filled
+pedestrian_share_3y,road users,t-3 to t-1,float64,zero-filled
+pedestrian_share_5y,road users,t-5 to t-1,float64,zero-filled
+schoolBus_count_1y,road users,t-1,float64,zero-filled
+schoolBus_count_3y,road users,t-3 to t-1,float64,zero-filled
+schoolBus_count_5y,road users,t-5 to t-1,int8,zero-filled
+schoolBus_share_1y,road users,t-1,float64,zero-filled
+schoolBus_share_3y,road users,t-3 to t-1,float64,zero-filled
+schoolBus_share_5y,road users,t-5 to t-1,float64,zero-filled
+truck_count_1y,road users,t-1,float64,zero-filled
+truck_count_3y,road users,t-3 to t-1,float64,zero-filled
+truck_count_5y,road users,t-5 to t-1,int64,zero-filled
+truck_share_1y,road users,t-1,float64,zero-filled
+truck_share_3y,road users,t-3 to t-1,float64,zero-filled
+truck_share_5y,road users,t-5 to t-1,float64,zero-filled
+ever_severe_5y,severity history,t-5 to t-1,int8,zero-filled
+fatal_count_1y,severity history,t-1,float64,zero-filled
+fatal_count_3y,severity history,t-3 to t-1,float64,zero-filled
+fatal_count_5y,severity history,t-5 to t-1,int8,zero-filled
+minor_count_1y,severity history,t-1,float64,zero-filled
+minor_count_3y,severity history,t-3 to t-1,float64,zero-filled
+minor_count_5y,severity history,t-5 to t-1,int64,zero-filled
+noninjury_count_1y,severity history,t-1,float64,zero-filled
+noninjury_count_3y,severity history,t-3 to t-1,float64,zero-filled
+noninjury_count_5y,severity history,t-5 to t-1,int64,zero-filled
+serious_count_1y,severity history,t-1,float64,zero-filled
+serious_count_3y,severity history,t-3 to t-1,float64,zero-filled
+serious_count_5y,severity history,t-5 to t-1,int8,zero-filled
+severe_count_1y,severity history,t-1,float64,zero-filled
+severe_count_3y,severity history,t-3 to t-1,float64,zero-filled
+severe_count_5y,severity history,t-5 to t-1,int8,zero-filled
+severe_share_1y,severity history,t-1,float64,zero-filled
+severe_share_3y,severity history,t-3 to t-1,float64,zero-filled
+severe_share_5y,severity history,t-5 to t-1,float64,zero-filled
+years_since_last_severe,severity history,t-5 to t-1,float64,zero-filled

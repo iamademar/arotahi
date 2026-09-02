@@ -1,0 +1,1300 @@
+/* Base + component CSS, styled with the NZTA design system in design-system/.
+   The visual language is navy/lime, Open Sans, square corners and no shadows;
+   see design-system/theme.md for the rules behind it. */
+
+* { box-sizing: border-box; }
+html { background: var(--color-background); }
+body {
+  margin: 0;
+  /* Column flex so the footer sits at the bottom on short pages (e.g. an
+     empty shortlist) instead of floating mid-screen. */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text);
+  background: var(--color-background);
+  font: var(--font-weight-regular) var(--font-size-body) / var(--line-height-body) var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--color-link); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { color: var(--color-action-hover); }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+  outline: var(--focus-width) solid var(--color-action);
+  outline-offset: var(--focus-offset);
+}
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* Header */
+.topbar {
+  min-height: 80px; display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; padding: 0 var(--space-8); color: var(--color-text-inverse);
+  background: var(--color-brand-navy);
+  position: sticky; top: 0; z-index: 30;
+}
+.brand { display: flex; align-items: center; gap: 11px; }
+/* The logo carries its own navy and lime, so it needs no background tile —
+   its white map squares give it a silhouette against the navy header. */
+.brand-mark {
+  width: 50px; height: 50px; flex: 0 0 auto; display: block; object-fit: contain;
+}
+.brand strong, .brand small { display: block; }
+.brand strong { font-size: var(--font-size-body); font-weight: var(--font-weight-semibold); }
+.brand small { margin-top: 1px; color: rgba(255, 255, 255, .8); font-size: var(--font-size-label); }
+.nav { align-self: stretch; display: flex; gap: 4px; }
+.nav a {
+  position: relative; display: flex; align-items: center; gap: var(--space-2);
+  padding: 0 var(--space-4);
+  color: var(--color-text-inverse); border: 0; background: transparent;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold); text-decoration: none;
+  border-bottom: var(--border-width-thick) solid transparent;
+  transition: var(--transition-hover);
+}
+.nav a:hover { color: var(--color-text-inverse); }
+/* Active tab carries the lime underline from the design's SiteHeader. That
+   3px rule is a shape, not a colour, so the state is still not signalled by
+   colour alone. */
+.nav a.active {
+  border-bottom-color: var(--color-brand-lime);
+}
+.nav .count {
+  display: inline-grid; min-width: 20px; height: 20px; place-items: center;
+  padding: 0 6px; color: var(--color-brand-navy);
+  background: var(--color-brand-lime);
+  border-radius: var(--radius-none); font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+}
+.header-actions { justify-self: end; display: flex; align-items: center; gap: 8px; }
+.prototype {
+  padding: var(--space-1) var(--space-2); color: var(--color-text-inverse);
+  border: var(--border-width) solid rgba(255, 255, 255, .5);
+  border-radius: var(--radius-none); font-size: var(--font-size-label);
+}
+.button {
+  min-height: var(--control-height); display: inline-flex; align-items: center;
+  justify-content: center;
+  gap: var(--space-2); padding: 0 var(--space-4); color: var(--color-action);
+  background: transparent;
+  border: var(--border-width) solid var(--color-action); border-radius: var(--radius-none);
+  font-weight: var(--font-weight-semibold); font-size: var(--font-size-body);
+  transition: var(--transition-hover);
+}
+.button:hover {
+  background: var(--color-action-subtle); color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+}
+.button.primary {
+  color: var(--color-text-inverse); background: var(--color-action);
+  border-color: var(--color-action);
+}
+.button.primary:hover {
+  background: var(--color-action-hover); border-color: var(--color-action-hover);
+  color: var(--color-text-inverse);
+}
+.button.icon { width: 32px; min-height: 32px; height: 32px; padding: 0; }
+.button:disabled { opacity: .55; cursor: not-allowed; }
+.topbar .button {
+  color: var(--color-text-inverse); background: transparent;
+  border-color: rgba(255, 255, 255, .5);
+}
+.topbar .button:hover { background: rgba(255, 255, 255, .12); color: var(--color-text-inverse); }
+
+/* Page framing */
+.workspace { width: min(1600px, calc(100% - 48px)); margin: 0 auto; padding: 30px 0 60px; }
+main.workspace { flex: 1 0 auto; }
+.heading { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 22px; }
+.eyebrow {
+  margin-bottom: var(--space-1); color: var(--color-text-secondary); text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-badge); font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+}
+h1 {
+  margin: 0;
+  font: var(--font-weight-semibold) var(--font-size-page) / var(--line-height-page) var(--font-sans);
+  color: var(--color-brand-navy);
+}
+.heading p {
+  margin: var(--space-2) 0 0; color: var(--color-text);
+  font-size: var(--font-size-body-lg); line-height: var(--line-height-body-lg);
+}
+
+/* Simulation target: the run selector, sat beside the heading. */
+.simulation {
+  flex: 0 1 480px; padding: var(--space-4); background: var(--color-surface-muted);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-none);
+}
+/* Year and reveal share a row so the header stays one compact band. Wraps
+   rather than overflowing once the heading stacks on narrow screens. */
+.simulation-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.simulation-label {
+  margin-bottom: var(--space-2); color: var(--color-text-secondary); text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-badge); font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+}
+.simulation select {
+  flex: 1 1 130px; height: var(--control-height); padding: 0 var(--space-3);
+  color: var(--color-brand-navy); background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-input); border-radius: var(--radius-none);
+  font-size: var(--font-size-body); font-weight: var(--font-weight-semibold);
+}
+.simulation-help {
+  margin: var(--space-2) 0 0; color: var(--color-text-secondary);
+  font-size: var(--font-size-small); line-height: var(--line-height-small);
+}
+.reveal-toggle {
+  display: flex; flex: 0 0 auto; align-items: center; gap: var(--space-2);
+  height: var(--control-height); padding: 0 var(--space-4);
+  color: var(--color-action); background: transparent;
+  border: var(--border-width) solid var(--color-action); border-radius: var(--radius-none);
+  font-size: var(--font-size-body); font-weight: var(--font-weight-semibold);
+  line-height: 1.3; text-align: left; cursor: pointer;
+  transition: var(--transition-hover);
+}
+.reveal-toggle:hover {
+  background: var(--color-action-subtle); color: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+}
+.reveal-toggle[aria-pressed='true'] {
+  color: var(--color-text-inverse); background: var(--color-action);
+  border-color: var(--color-action);
+}
+.reveal-toggle .eye { flex: 0 0 16px; }
+.reveal-hint {
+  margin: var(--space-2) 0 0; color: var(--color-text-secondary);
+  font-size: var(--font-size-small); line-height: var(--line-height-small);
+}
+.warning {
+  display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); align-items: center;
+  margin-bottom: var(--space-4); padding: var(--space-4); background: var(--color-warning-surface);
+  border: var(--border-width) solid var(--color-warning);
+  border-left: var(--border-width-thick) solid var(--color-warning);
+  border-radius: var(--radius-none);
+}
+.warning-icon {
+  width: 34px; height: 34px; display: grid; place-items: center; color: var(--color-warning);
+  background: transparent; border-radius: var(--radius-none);
+}
+.warning strong {
+  display: block; font-size: var(--font-size-body); color: var(--color-warning);
+  font-weight: var(--font-weight-semibold);
+}
+.warning span { display: block; margin-top: 2px; color: var(--color-text); font-size: var(--font-size-small); }
+.warning details { margin-top: var(--space-1); color: var(--color-text); font-size: var(--font-size-small); }
+.warning summary { cursor: pointer; font-weight: var(--font-weight-semibold); }
+.warning details p { margin: 6px 0 0; line-height: 1.5; }
+
+/* Banner for a model-version mismatch (new: static metrics must fail loudly) */
+.version-banner {
+  margin-bottom: var(--space-4); padding: var(--space-4); color: var(--color-text);
+  background: var(--color-danger-surface);
+  border: var(--border-width) solid var(--color-danger);
+  border-left: var(--border-width-thick) solid var(--color-danger);
+  border-radius: var(--radius-none);
+  font-size: var(--font-size-small);
+}
+.version-banner strong {
+  display: block; font-size: var(--font-size-body); margin-bottom: 2px;
+  color: var(--color-danger); font-weight: var(--font-weight-semibold);
+}
+
+/* Controls */
+.controls {
+  margin-bottom: var(--space-4); padding: var(--space-4) var(--space-6);
+  background: var(--color-surface); border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-none);
+}
+.controls-header {
+  display: grid; grid-template-columns: minmax(280px, 580px) auto;
+  gap: 24px; align-items: end; justify-content: space-between;
+}
+.controls-header .more-toggle { min-height: var(--control-height); }
+.controls-header .more-toggle[aria-expanded="true"] {
+  border-color: var(--color-action-hover); background: var(--color-action-subtle);
+}
+.field { display: flex; flex-direction: column; gap: var(--space-2); }
+.field label, .capacity-top label {
+  color: var(--color-text); text-transform: none; letter-spacing: 0;
+  font-size: var(--font-size-small); line-height: var(--line-height-small);
+  font-weight: var(--font-weight-semibold);
+}
+.field select, .field input, .search input, textarea, .filters select, .filters input {
+  height: var(--control-height); padding: 0 var(--space-3); color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-input); border-radius: var(--radius-none);
+  font-size: var(--font-size-body);
+}
+.capacity { display: flex; flex-direction: column; gap: var(--space-2); }
+.capacity-top { display: flex; align-items: baseline; justify-content: space-between; }
+.capacity-top strong { font-size: var(--font-size-body); color: var(--color-brand-navy); }
+.capacity input[type=range] { width: 100%; accent-color: var(--color-action); }
+/* Square thumb, matching the design's slider. */
+.capacity input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 14px; height: 20px;
+  border-radius: var(--radius-none); background: var(--color-action); border: 0; cursor: pointer;
+}
+.capacity input[type=range]::-moz-range-thumb {
+  width: 14px; height: 20px; border-radius: var(--radius-none);
+  background: var(--color-action); border: 0; cursor: pointer;
+}
+.capacity-scale {
+  display: flex; justify-content: space-between; color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+.more-toggle .badge { margin-left: var(--space-1); }
+
+/* Advanced filters: expand inline beneath the header row. */
+.advanced-filters {
+  display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: var(--space-6);
+  margin-top: var(--space-6); padding-top: var(--space-6);
+  border-top: var(--border-width) solid var(--color-border);
+}
+.advanced-filters .filters-note { grid-column: 1 / -1; margin: 0; }
+.filters-note {
+  color: var(--color-text-secondary); font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+/* Sizing scoped to the controls bar: .field is shared with the area drawer. */
+.controls .capacity {
+  margin-top: var(--space-6); padding-top: var(--space-6);
+  border-top: var(--border-width) solid var(--color-border);
+}
+.controls select, .controls .field input { height: var(--control-height); width: 100%; }
+.controls input[type=range] { height: 4px; }
+
+/* Metric tiles */
+.metrics {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-4); margin-bottom: var(--space-6);
+}
+.metric {
+  position: relative; min-height: 102px; padding: var(--space-4) 20px var(--space-8);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border); border-radius: var(--radius-none);
+}
+.metric-label {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .06em;
+  font-size: var(--font-size-label); line-height: var(--line-height-label);
+  font-weight: var(--font-weight-semibold);
+}
+.metric-info {
+  display: inline-grid; place-items: center; width: 16px; height: 16px; padding: 0;
+  color: var(--color-action); background: transparent;
+  border: var(--border-width) solid var(--color-action);
+  border-radius: var(--radius-none);
+  font: var(--font-weight-semibold) 10px/1 var(--font-sans); cursor: help;
+  transition: var(--transition-hover);
+}
+.metric-info:hover { color: var(--color-text-inverse); background: var(--color-action); }
+/* The accent tile is navy: the default border would vanish against it. */
+.metric.accent .metric-info {
+  color: var(--color-text-inverse); border-color: rgba(255, 255, 255, .6);
+}
+.metric.accent .metric-info:hover {
+  color: var(--color-brand-navy); background: var(--color-text-inverse);
+}
+
+/* Tooltip bubble. Rendered, not a native title=, so it appears instantly and is
+   not suppressed by the button's aria-label. */
+.metric-info-wrap { position: relative; display: inline-flex; }
+/* One of the two places a shadow is allowed: a transient overlay that has to
+   read above the page. */
+.metric-tooltip {
+  position: absolute; z-index: 40; left: 50%; bottom: calc(100% + 9px);
+  width: 264px; padding: var(--space-4); transform: translateX(-50%);
+  color: var(--color-text); background: var(--color-surface);
+  border: var(--border-width) solid var(--color-brand-navy);
+  border-radius: var(--radius-none);
+  box-shadow: var(--shadow-overlay);
+  font: var(--font-weight-regular) var(--font-size-small) / var(--line-height-small) var(--font-sans);
+  letter-spacing: 0; text-transform: none; text-align: left;
+  white-space: pre-line; pointer-events: none;
+}
+.metric-tooltip[hidden] { display: none; }
+.metric-tooltip::after {
+  content: ""; position: absolute; left: 50%; top: 100%;
+  border: 6px solid transparent; border-top-color: var(--color-brand-navy);
+  transform: translateX(-50%);
+}
+
+.metric-value {
+  margin-top: var(--space-2);
+  font: var(--font-weight-semibold) var(--font-size-page) / 36px var(--font-sans);
+  color: var(--color-brand-navy); font-variant-numeric: tabular-nums;
+}
+.metric-detail {
+  position: absolute; left: 20px; bottom: var(--space-3); color: var(--color-text-secondary);
+  font-size: var(--font-size-label); line-height: var(--line-height-label);
+}
+/* The revealed outcome tile is the one the design marks with a lime top rule. */
+.metric.accent {
+  color: var(--color-text-inverse); background: var(--color-brand-navy);
+  border-color: var(--color-brand-navy);
+  border-top: var(--border-width-thick) solid var(--color-brand-lime);
+}
+.metric.accent .metric-value { color: var(--color-text-inverse); }
+.metric.accent .metric-label, .metric.accent .metric-detail { color: rgba(255, 255, 255, .8); }
+/* New: masked state for outcome-dependent tiles before reveal */
+.metric.masked {
+  background: var(--color-surface-muted); border-style: dashed;
+}
+.metric.masked .metric-value {
+  color: var(--color-text-secondary); font-size: var(--font-size-small);
+  line-height: var(--line-height-small); font-family: var(--font-sans);
+  font-weight: var(--font-weight-regular);
+}
+.metric.accent.masked {
+  color: var(--color-text); background: var(--color-surface-muted);
+  border-color: var(--color-border); border-style: dashed;
+  border-top: var(--border-width-thick) solid var(--color-brand-lime);
+}
+.metric.accent.masked .metric-label, .metric.accent.masked .metric-detail {
+  color: var(--color-text-secondary);
+}
+
+/* Analysis grid */
+.analysis { display: grid; grid-template-columns: minmax(440px, .88fr) minmax(620px, 1.12fr); gap: 16px; align-items: start; }
+
+/* Stale window: the previous selection's numbers are still on screen while the
+   next set loads. The section is deliberately not unmounted — doing so shrinks
+   the document, which makes the browser clamp the scroll to the top and drops
+   focus from the region select inside it. Dimming says "not your new selection
+   yet" without moving anything.
+
+   .analysis and .metrics are motion elements: motion writes their opacity
+   inline on every frame, so their dim is driven by the animate prop instead of
+   from here — a rule here would silently lose the cascade. This file owns only
+   what motion does not touch.
+
+   Pointer events stay live — the region select the analyst is using sits inside
+   this section, and disabling the subtree would drop their focus, the exact
+   failure this treatment exists to prevent. Selection and shortlisting are
+   gated in the handlers instead. */
+.analysis.is-stale, .metrics.is-stale { cursor: progress; }
+/* Specificity has to beat .panel / .metric, which are defined later in this
+   file; a bare `.is-stale > *` loses to them on source order. The section
+   itself cannot carry the dim because motion writes its opacity inline. */
+.analysis.is-stale > .panel,
+.metrics.is-stale > .metric { opacity: .55; transition: opacity 180ms ease-out; }
+.analysis.is-stale > .stale-error { opacity: 1; }
+/* Sits inside the dimmed panel, so it needs to stay legible: the panel is at
+   .55 and this note is the one thing in it describing the current state. */
+.stale-note {
+  margin: var(--space-1) 0 0; color: var(--color-warning);
+  font-size: var(--font-size-small); font-weight: var(--font-weight-semibold);
+}
+
+.stale-error {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4); color: var(--color-danger);
+  background: var(--color-danger-surface);
+  border: var(--border-width) solid var(--color-danger);
+  border-left: var(--border-width-thick) solid var(--color-danger);
+  border-radius: var(--radius-none);
+  font-size: var(--font-size-small);
+}
+.stale-error span { color: var(--color-text); }
+.stale-error button { margin-left: auto; }
+
+.panel {
+  background: var(--color-surface); border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-none); overflow: hidden;
+}
+.panel-header {
+  min-height: 70px; display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-3); padding: var(--space-4) var(--space-6);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+.panel-title { display: flex; align-items: center; gap: var(--space-3); }
+.panel-header h2 {
+  margin: 0;
+  font: var(--font-weight-semibold) var(--font-size-section) / var(--line-height-section) var(--font-sans);
+  color: var(--color-brand-navy);
+}
+/* The heading names the region and now changes it too. Scoped rules like
+   .field select do not reach here, so the form chrome is restated; the font is
+   inherited so the control reads as part of the sentence it sits in. */
+.panel-region-select {
+  font: inherit; color: var(--color-brand-navy); background: var(--color-surface);
+  padding: 2px 6px; border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-none);
+  /* A select sizes itself to its widest option, so without this the control
+     stretches to fit "Manawatū-Whanganui" whatever is actually chosen, leaving
+     the heading trailing a wide empty box. field-sizing shrinks it to the
+     selected text; the max-width keeps the longest option from overflowing the
+     panel where that is not supported. */
+  field-sizing: content;
+  max-width: 100%;
+}
+.panel-header p {
+  margin: var(--space-2) 0 0; color: var(--color-text);
+  font-size: var(--font-size-body); line-height: var(--line-height-body);
+}
+/* Badge, in the design's "outline" tone. */
+.badge {
+  display: inline-flex; align-items: center; height: 20px;
+  padding: 0 var(--space-2); color: var(--color-brand-navy); background: transparent;
+  border: var(--border-width) solid var(--color-brand-navy);
+  border-radius: var(--radius-none); font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-badge); text-transform: uppercase;
+  white-space: nowrap;
+}
+/* The "lime" tone: used where a badge marks a live/affirmative state. */
+.badge.green {
+  color: var(--color-brand-navy); background: var(--color-brand-lime);
+  border-color: var(--color-brand-lime);
+}
+.panel-actions { display: flex; gap: var(--space-2); }
+
+/* Map */
+.map { position: relative; height: 500px; background: var(--color-surface-subtle); }
+.map-canvas { position: absolute; inset: 0; }
+/* Legend and context note share one bottom-left stack, so the note is pushed up
+   by the legend's real height. It previously relied on a --legend-h custom
+   property that nothing ever set, so a taller legend (once outcomes are
+   revealed) was overlapped. */
+.map-overlays {
+  position: absolute; z-index: 10; left: var(--space-3); bottom: var(--space-3); width: 200px;
+  display: flex; flex-direction: column; gap: var(--space-2); align-items: stretch;
+}
+.legend {
+  padding: var(--space-3);
+  background: rgba(255, 255, 255, .94); border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-none);
+}
+.legend-title {
+  color: var(--color-brand-navy); text-transform: none; letter-spacing: 0;
+  font-size: var(--font-size-label); line-height: var(--line-height-label);
+  font-weight: var(--font-weight-semibold);
+}
+.scale {
+  display: grid; grid-template-columns: repeat(5, 1fr); height: 10px;
+  margin-top: var(--space-2); overflow: hidden; border-radius: var(--radius-none);
+}
+.scale i:nth-child(1) { background: var(--scale-1); }
+.scale i:nth-child(2) { background: var(--scale-2); }
+.scale i:nth-child(3) { background: var(--scale-3); }
+.scale i:nth-child(4) { background: var(--scale-4); }
+.scale i:nth-child(5) { background: var(--scale-5); }
+.scale-labels {
+  display: flex; justify-content: space-between; margin: var(--space-1) 0 var(--space-2);
+  color: var(--color-text-secondary); font-size: var(--font-size-label);
+}
+.legend-item {
+  display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-2);
+  padding-top: var(--space-2); border-top: var(--border-width) solid var(--color-border);
+  color: var(--color-text-secondary); font-size: var(--font-size-label);
+}
+.legend-note {
+  margin-top: var(--space-2); color: var(--color-text-secondary);
+  font-size: var(--font-size-label); line-height: var(--line-height-label);
+}
+/* Matches the map's "crash occurred" ring: a navy outline, not a fill. */
+.outcome-swatch {
+  display: inline-grid; place-items: center; width: 14px; height: 14px;
+  color: var(--color-brand-navy);
+  background: transparent; border: 2px solid var(--color-brand-navy);
+  border-radius: var(--radius-none); font-size: 9px;
+}
+/* Stacked bottom-left so the OpenFreeMap / OpenStreetMap attribution at
+   bottom-right stays visible, as the ODbL and OpenFreeMap's terms require. */
+.context-note {
+  margin: 0; padding: var(--space-1) var(--space-2); color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, .94);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-none); font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+}
+/* Markers are DOM and arrive at full opacity, so during the load-in wave they
+   would hover over cells that have not appeared yet. Fading the whole marker
+   layer is enough; timing each badge to its own cell is not worth the wiring.
+   Only the markers fade — the legend and context note stay readable. */
+.map .maplibregl-marker { transition: opacity 240ms ease-out; }
+.map.revealing .maplibregl-marker { opacity: 0; }
+
+.map-marker-rank {
+  display: grid; place-items: center; width: 22px; height: 22px;
+  color: var(--color-text-inverse);
+  background: var(--color-brand-navy); border: var(--border-width) solid #fff;
+  border-radius: var(--radius-none);
+  font: var(--font-weight-semibold) var(--font-size-label)/1 var(--font-sans);
+}
+.map-marker-outcome {
+  display: grid; place-items: center; width: 22px; height: 22px;
+  color: var(--color-text-inverse);
+  background: var(--color-danger); border: 2px solid #fff;
+  border-radius: var(--radius-none); font-size: var(--font-size-label);
+}
+
+/* Hover popup (CellMap hoverInfo). Follows the pointer, so it stays small and
+   never takes pointer events of its own. */
+.cell-hover-popup { pointer-events: none; }
+.cell-hover-popup .maplibregl-popup-content {
+  padding: var(--space-3); background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border); border-radius: var(--radius-none);
+  box-shadow: var(--shadow-overlay);
+}
+.cell-hover-popup .maplibregl-popup-tip { display: none; }
+.cell-hover-id {
+  color: var(--color-brand-navy);
+  font: var(--font-weight-semibold) var(--font-size-label) var(--font-mono);
+}
+.cell-hover-place {
+  margin-top: 2px; color: var(--color-text-secondary); font-size: var(--font-size-small);
+}
+.cell-hover-stats {
+  display: grid; grid-template-columns: 1fr auto; gap: 2px var(--space-3);
+  margin: var(--space-2) 0 0; padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--color-border);
+}
+.cell-hover-stats dt { color: var(--color-text-secondary); font-size: var(--font-size-small); }
+.cell-hover-stats dd {
+  margin: 0; color: var(--color-brand-navy); font-size: var(--font-size-small);
+  font-weight: var(--font-weight-semibold); text-align: right;
+}
+
+/* Queue */
+.queue-panel { display: flex; flex-direction: column; }
+.search {
+  display: flex; align-items: center; gap: var(--space-2);
+  margin: var(--space-4) var(--space-6); padding-left: var(--space-3);
+  color: var(--color-text-secondary);
+  border: var(--border-width) solid var(--color-border-input); border-radius: var(--radius-none);
+}
+.search input { flex: 1; border: 0; box-shadow: none; }
+.search input:focus-visible { outline-offset: -2px; }
+.table-wrap { overflow: auto; max-height: 620px; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  height: var(--control-height); padding: 0 var(--space-3); color: var(--color-text-inverse);
+  text-align: left;
+  background: var(--color-brand-navy); text-transform: uppercase;
+  letter-spacing: .06em; font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold); position: sticky; top: 0; z-index: 2;
+}
+td {
+  height: 55px; padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+  font-size: var(--font-size-small); vertical-align: middle;
+}
+tbody tr:hover { background: var(--color-action-subtle); }
+tbody tr.selected { background: var(--color-action-subtle); }
+tbody tr.beyond-capacity td { background: var(--color-surface-muted); }
+tbody tr.beyond-capacity:hover td { background: var(--color-action-subtle); }
+.rank {
+  font: var(--font-weight-semibold) var(--font-size-body) / var(--line-height-body) var(--font-sans);
+  color: var(--color-brand-navy); font-variant-numeric: tabular-nums;
+}
+.rank small {
+  display: block; color: var(--color-text-secondary);
+  font: var(--font-weight-regular) var(--font-size-label) var(--font-sans);
+}
+.area-link { display: block; color: inherit; background: none; border: 0; padding: 0; text-align: left; }
+.area-link strong {
+  display: block; font-size: var(--font-size-body); color: var(--color-link);
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.area-link small {
+  display: block; margin-top: 2px; color: var(--color-text-secondary);
+  font: var(--font-size-label) var(--font-mono); font-variant-numeric: tabular-nums;
+}
+.probability { display: flex; align-items: center; gap: var(--space-3); }
+.probability-track {
+  flex: 1; min-width: 54px; height: 8px; background: var(--color-surface-subtle);
+  border-radius: var(--radius-none); overflow: hidden;
+}
+.probability-track i { display: block; height: 100%; background: var(--color-brand-navy); }
+.probability-value {
+  min-width: 42px; font-weight: var(--font-weight-semibold); font-size: var(--font-size-small);
+  font-variant-numeric: tabular-nums;
+}
+.outcome-occurred {
+  display: inline-flex; align-items: center; gap: var(--space-1); color: var(--color-danger);
+  font-weight: var(--font-weight-semibold); font-size: var(--font-size-small);
+}
+.outcome-none { color: var(--color-text-secondary); font-size: var(--font-size-small); }
+.row-actions { display: flex; gap: var(--space-2); justify-content: flex-end; }
+.queue-footer {
+  min-height: 43px; display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-6); padding: var(--space-4) var(--space-6); color: var(--color-text-secondary);
+  border-top: var(--border-width) solid var(--color-border); font-size: var(--font-size-small);
+}
+.queue-footer button {
+  color: var(--color-link); background: none; border: 0;
+  font-weight: var(--font-weight-semibold); font-size: var(--font-size-small);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+/* New: tie note. Ranks inside an equal-probability run are arbitrary. */
+.tie-note {
+  padding: var(--space-4) var(--space-6); color: var(--color-text);
+  background: var(--color-warning-surface);
+  border-top: var(--border-width) solid var(--color-border);
+  font-size: var(--font-size-small); line-height: var(--line-height-small);
+}
+
+/* Not-assessed result (new: a searched cell outside the eligible population) */
+.not-assessed {
+  margin: var(--space-4) var(--space-6); padding: var(--space-4);
+  background: var(--color-surface-muted);
+  border: var(--border-width) solid var(--color-border); border-radius: var(--radius-none);
+}
+.not-assessed strong {
+  display: block; font-size: var(--font-size-body); color: var(--color-brand-navy);
+  font-weight: var(--font-weight-semibold);
+}
+.not-assessed code { font: var(--font-size-label) var(--font-mono); color: var(--color-text-secondary); }
+.not-assessed p {
+  margin: var(--space-2) 0 0; color: var(--color-text); font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+/* The design puts this strip on a muted panel inside the card. */
+.reveal {
+  min-height: 62px; display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-6); margin: var(--space-6); padding: var(--space-4);
+  background: var(--color-surface-muted);
+  border: var(--border-width) solid var(--color-border);
+}
+.reveal-copy { display: flex; align-items: center; gap: var(--space-3); }
+.reveal-copy .eye { color: var(--color-brand-navy); font-size: 20px; }
+.reveal-copy strong, .reveal-copy span { display: block; }
+.reveal-copy strong {
+  font-size: var(--font-size-body); color: var(--color-brand-navy);
+  font-weight: var(--font-weight-semibold);
+}
+.reveal-copy span {
+  margin-top: 2px; color: var(--color-text-secondary); font-size: var(--font-size-small);
+}
+.switch-label {
+  display: flex; align-items: center; gap: var(--space-2); color: var(--color-brand-navy);
+  font-size: var(--font-size-body); font-weight: var(--font-weight-semibold); white-space: nowrap;
+}
+.switch-label input {
+  width: 20px; height: 20px; accent-color: var(--color-action);
+  border-radius: var(--radius-none);
+}
+
+/* Decision strip */
+/* Drawer */
+/* React owns presence now, so no display toggle: motion cannot animate out of
+   display:none, and the element only exists while the drawer is open. */
+.backdrop { position: fixed; inset: 0; z-index: 40; display: block; background: rgba(0, 0, 0, .3); }
+/* The second place a shadow is allowed: the drawer floats over the page.
+   Its header is the design's navy band, so the panel padding starts below it. */
+.drawer {
+  position: absolute; top: 0; right: 0; width: min(600px, 96vw); height: 100%;
+  overflow-y: auto; padding: 0 0 var(--space-6); background: var(--color-surface);
+  border-left: var(--border-width) solid var(--color-border);
+  box-shadow: var(--shadow-overlay);
+}
+/* Padding lives on the drawer, but the navy header has to run full-bleed to
+   both edges, so it cancels the inline padding with a negative margin rather
+   than every other child having to opt in. */
+.drawer { padding-inline: var(--space-6); }
+.drawer-header {
+  position: sticky; top: 0; z-index: 1;
+  margin-inline: calc(var(--space-6) * -1); margin-bottom: var(--space-6);
+  padding: 20px var(--space-6); background: var(--color-brand-navy);
+  color: var(--color-text-inverse);
+}
+.drawer-close {
+  position: absolute; top: 20px; right: var(--space-6); width: 32px; height: 32px;
+  color: var(--color-text-inverse); background: transparent;
+  border: var(--border-width) solid rgba(255, 255, 255, .5); border-radius: var(--radius-none);
+}
+.drawer-close:hover { background: rgba(255, 255, 255, .12); }
+.drawer-kicker {
+  color: var(--color-brand-lime); text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-badge); font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+}
+.drawer h2 {
+  margin: var(--space-1) 0 var(--space-1);
+  font: var(--font-weight-semibold) var(--font-size-section) / var(--line-height-section) var(--font-sans);
+  color: var(--color-text-inverse);
+}
+.drawer-id {
+  color: rgba(255, 255, 255, .8); font: var(--font-size-label) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.score-block {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+  margin: 0 0 var(--space-6); padding: var(--space-4); background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border); border-radius: var(--radius-none);
+}
+.score-block .label {
+  color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .06em;
+  font-size: var(--font-size-label); font-weight: var(--font-weight-semibold);
+}
+.score-block .score {
+  margin-top: var(--space-1);
+  font: var(--font-weight-semibold) var(--font-size-display) / var(--line-height-display) var(--font-sans);
+  color: var(--color-brand-navy); font-variant-numeric: tabular-nums;
+}
+.score-block small {
+  display: block; margin-top: var(--space-1); color: var(--color-text-secondary);
+  font-size: var(--font-size-label); max-width: 250px; line-height: 18px;
+}
+.percentile {
+  text-align: right; border-left: var(--border-width) solid var(--color-border);
+  padding-left: var(--space-4);
+}
+.percentile strong {
+  display: block;
+  font: var(--font-weight-semibold) var(--font-size-section) / 30px var(--font-sans);
+  color: var(--color-brand-navy); font-variant-numeric: tabular-nums;
+}
+.percentile span { display: block; color: var(--color-text-secondary); font-size: var(--font-size-label); }
+/* The band reads as the design's lime badge. */
+.percentile .band {
+  display: inline-flex; align-items: center; height: 20px; margin-top: var(--space-1);
+  padding: 0 var(--space-2); color: var(--color-brand-navy); background: var(--color-brand-lime);
+  font-size: var(--font-size-label); font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-badge); text-transform: uppercase;
+}
+.detail-section { margin-top: var(--space-6); }
+.detail-section h3 {
+  margin: 0 0 var(--space-3); color: var(--color-brand-navy); text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--font-size-body); line-height: var(--line-height-body);
+  font-weight: var(--font-weight-semibold);
+}
+.detail-section h3 span {
+  text-transform: none; letter-spacing: 0; font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary); font-size: var(--font-size-small);
+}
+.history-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+.history-stat {
+  padding: var(--space-3); background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border); border-radius: var(--radius-none);
+}
+.history-stat strong {
+  display: block;
+  font: var(--font-weight-semibold) var(--font-size-section) / 30px var(--font-sans);
+  color: var(--color-brand-navy); font-variant-numeric: tabular-nums;
+}
+.history-stat small {
+  display: block; margin-top: 2px; color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+.timeline-chart { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.timeline-plot { display: flex; align-items: stretch; gap: 6px; }
+/* Both the gutter and every year column run on the same three rows: value,
+   plot band, year. The band is the only flexible row, so the ticks and the
+   gridlines resolve against one shared band rather than being padded into
+   rough agreement by hand. The row heights are the label rows' own line boxes
+   (the 13px value and 12px year label at 1.4), stated so the gutter — which has
+   no labels to size row 1 and 3 for it — brackets the same band as the columns. */
+.timeline-axis, .timeline-col {
+  display: grid; grid-template-rows: 18px minmax(0, 1fr) 17px; gap: var(--space-2);
+}
+.timeline-axis {
+  flex: 0 0 auto; min-width: 16px; justify-items: end; height: 96px;
+  color: var(--color-text-secondary); font: 12px/1.4 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+/* The ticks bracket the plot row: the max sits on its top gridline, 0 on the
+   baseline. Each is nudged half a line so the digits centre on the rule. */
+.timeline-axis .tick-max { grid-row: 2; align-self: start; margin-top: -8px; }
+.timeline-axis .tick-zero { grid-row: 2; align-self: end; margin-bottom: -8px; }
+.timeline { display: flex; align-items: stretch; gap: var(--space-3); height: 96px; flex: 1 1 auto; }
+.timeline-col { flex: 1; height: 100%; justify-items: center; }
+/* Gridlines mark 0 and the max, and bound the plot band exactly. Kept to
+   the border token so the bars stay the loudest mark in the frame. */
+/* content-box so the bars' percentage heights resolve against the band itself
+   rather than the band minus its two rules; otherwise the tallest bar stops a
+   pixel short of the gridline that is meant to be its scale. */
+.timeline-track {
+  grid-row: 2; display: flex; align-items: flex-end; width: 100%;
+  box-sizing: content-box; background: var(--color-surface-subtle);
+  border-top: var(--border-width) solid var(--color-border);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+.timeline-col i {
+  display: block; flex: 0 0 auto; width: 100%; min-height: 2px;
+  background: var(--color-brand-navy); border-radius: var(--radius-none);
+}
+.timeline-col span { color: var(--color-text-secondary); font-size: var(--font-size-label); }
+.timeline-col b {
+  color: var(--color-brand-navy); font-size: 13px;
+  font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums;
+}
+/* Rows share one border, like the design's bordered list. */
+.inputs-list {
+  display: grid; gap: 0; border: var(--border-width) solid var(--color-border);
+}
+.input-row {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);
+  padding: 10px var(--space-4); background: var(--color-surface);
+  border: 0; border-bottom: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-none); font-size: var(--font-size-small);
+}
+.input-row:last-child { border-bottom: 0; }
+.input-row strong {
+  font-size: var(--font-size-small); color: var(--color-brand-navy);
+  font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums;
+}
+.muted-note {
+  margin-top: var(--space-3); color: var(--color-text-secondary);
+  font-size: var(--font-size-small); line-height: var(--line-height-small);
+}
+.limited-warning {
+  margin-top: var(--space-4); padding: var(--space-4); background: var(--color-warning-surface);
+  border: var(--border-width) solid var(--color-warning);
+  border-left: var(--border-width-thick) solid var(--color-warning);
+  border-radius: var(--radius-none);
+}
+.limited-warning strong {
+  display: block; font-size: var(--font-size-body); color: var(--color-warning);
+  font-weight: var(--font-weight-semibold);
+}
+.limited-warning span {
+  display: block; margin-top: var(--space-1); color: var(--color-text);
+  font-size: var(--font-size-small); line-height: var(--line-height-small);
+}
+.drawer textarea { width: 100%; min-height: 78px; padding: var(--space-3); resize: vertical; }
+.drawer select { width: 100%; }
+.drawer-actions {
+  display: flex; gap: var(--space-3); margin-top: var(--space-6);
+  padding-top: 20px; padding-bottom: var(--space-6);
+  border-top: var(--border-width) solid var(--color-border);
+}
+.drawer-actions .button { flex: 1 1 auto; }
+
+/* Shortlist + model performance views */
+.pills {
+  display: flex; flex-wrap: wrap; gap: 0; margin-bottom: var(--space-6);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+.pill {
+  padding: var(--space-3) var(--space-4); color: var(--color-link);
+  background: transparent;
+  border: 0; border-bottom: var(--border-width-thick) solid transparent;
+  border-radius: var(--radius-none);
+  font-size: var(--font-size-body); font-weight: var(--font-weight-semibold);
+  margin-bottom: -1px; transition: var(--transition-hover);
+}
+.pill:hover { color: var(--color-action-hover); background: var(--color-action-subtle); }
+.pill[aria-selected='true'] {
+  color: var(--color-brand-navy); background: transparent;
+  border-bottom-color: var(--color-brand-lime);
+}
+
+/* Pipeline overview: the five-step explainer, rebuilt from the design export.
+   The export was a fixed 1680px artboard of inline styles; here the palette
+   comes from the tokens and the grid reflows instead of holding five columns. */
+/* A container query, not a media query: the grid has to respond to the width of
+   the panel it sits in, which is narrower than the viewport. Keyed to the
+   viewport, the five-track rule below would still apply in a 360px panel. */
+.pipeline { padding: 16px; container-type: inline-size; }
+.pipeline-grid {
+  display: grid; gap: 24px; align-items: stretch; max-width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+/* Three columns is the ceiling. The export ran all five across one row, which
+   left each step too narrow for its card contents; the fifth step's map and the
+   third's metric rows suffered most. Five steps over three columns puts 1-3 on
+   the first row and 4-5 on the second, reading plainly left to right. */
+@container (min-width: 860px) {
+  .pipeline-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* The steps already stretch to equal heights, but the lede sits between the
+     heading and the card, so a step whose intro wraps to an extra line starts
+     its card lower and ends it shorter than its neighbours. Reserving a fixed
+     four lines pins every card to the same offset however the prose wraps.
+     Four rather than three: the column is narrow enough around 900-1100px that
+     these intros take a fourth line, and that is still a three-column layout.
+     Only inside this query — at one column there is no neighbour to align to,
+     and the reserve would be dead space under every intro. */
+  .pipeline-lede { min-height: calc(4 * 1.55em); }
+}
+.pipeline-step { display: flex; flex-direction: column; gap: 14px; container-type: inline-size; }
+.pipeline-step-head { display: flex; align-items: center; gap: 10px; }
+.pipeline-step-number {
+  width: 30px; height: 30px; flex: none; display: grid; place-items: center;
+  color: #fff; background: var(--color-brand-navy-dark); border-radius: var(--radius-none);
+  font-size: 15px; font-weight: 700;
+}
+.pipeline-step h3 {
+  margin: 0;
+  font: var(--font-weight-semibold) var(--font-size-component) / var(--line-height-component) var(--font-sans);
+  color: var(--color-brand-navy);
+}
+.pipeline-lede { margin: 0; color: var(--color-text-secondary); font-size: 13px; line-height: 1.55; }
+
+.pipeline-card {
+  flex: 1 1 auto;
+  display: flex; flex-direction: column; gap: 14px; padding: 16px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-none); box-shadow: none;
+}
+.pipeline-card-flush { padding: 0; overflow: hidden; }
+.pipeline-card-head {
+  padding: 12px 16px; color: #fff; background: var(--color-brand-navy-dark);
+  font-size: 14px; font-weight: 600; text-align: center;
+}
+
+/* Step 1 */
+.pipeline-source { display: flex; align-items: center; gap: 12px; }
+.pipeline-chip-mono {
+  flex: none; padding: 10px 14px; color: #fff; background: var(--color-brand-navy-dark);
+  border-radius: var(--radius-none); font: 500 20px var(--font-mono); letter-spacing: .02em;
+}
+.pipeline-source-label { color: var(--color-text-secondary); font-size: 13px; line-height: 1.4; }
+.pipeline-source-link { color: var(--color-action); font-weight: 700; text-decoration: none; }
+.pipeline-source-link:hover { text-decoration: underline; }
+/* Sits on the dark strip, so it takes the strip's own foreground. */
+.pipeline-strip-link { color: inherit; text-decoration-color: rgba(255, 255, 255, .45); }
+.pipeline-strip-link:hover { text-decoration-color: #fff; }
+.pipeline-table { border: 1px solid var(--color-border); border-radius: var(--radius-none); overflow: hidden; }
+.pipeline-table-row {
+  display: grid; font: var(--font-size-label) var(--font-mono);
+  grid-template-columns:
+    minmax(0, .78fr) minmax(0, 1.15fr) minmax(0, .78fr)
+    minmax(0, .72fr) minmax(0, .82fr) minmax(0, .95fr);
+}
+.pipeline-table-row span {
+  padding: 7px 5px; border-bottom: 1px solid var(--color-border);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pipeline-table-row:last-child span { border-bottom: 0; }
+.pipeline-table-head span { color: var(--color-text-secondary); background: var(--color-surface-subtle); }
+.pipeline-table-fade span { color: var(--color-text-secondary); }
+.pipeline-strip {
+  padding: 12px 14px; color: #fff; background: var(--color-brand-navy-dark);
+  border-radius: var(--radius-none); font-size: 13px; line-height: 1.5;
+}
+.pipeline-strip strong { font: 500 13px var(--font-mono); }
+
+/* Step 2 */
+.pipeline-years { display: flex; flex-wrap: wrap; align-items: stretch; gap: 4px; }
+.pipeline-year {
+  flex: 1 1 0; min-width: 44px; padding: 6px 4px; text-align: center;
+  background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-none);
+  font: 12px var(--font-mono);
+}
+.pipeline-year-predict {
+  flex: 1 1 0; min-width: 54px; padding: 4px; text-align: center;
+  color: #fff; background: var(--color-brand-navy-dark); border-radius: var(--radius-none);
+  font: 500 13px var(--font-mono);
+}
+.pipeline-year-predict small {
+  display: block; color: var(--color-border); font-family: var(--font-sans);
+  font-size: var(--font-size-label); font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+}
+.pipeline-arrow { color: var(--color-text-secondary); font-size: 20px; align-self: center; }
+.pipeline-caption { font-size: 13px; font-weight: 600; }
+.pipeline-caption-muted { color: var(--color-text-secondary); font-weight: 600; text-align: center; }
+.pipeline-chip-warn {
+  padding: 8px 12px; color: var(--color-danger); background: var(--color-danger-surface);
+  border: 1px solid var(--color-danger); border-radius: var(--radius-none);
+  font-size: 13px; font-weight: 600; text-align: center;
+}
+.pipeline-chip-ok {
+  padding: 8px 12px; color: var(--color-brand-navy); background: var(--color-action-subtle);
+  border: 1px solid var(--color-action); border-radius: var(--radius-none);
+  font-size: 13px; font-weight: 600; text-align: center;
+}
+
+/* Step 3 */
+.pipeline-metrics { padding: 0 16px; }
+.pipeline-metric { padding: 11px 0; border-bottom: 1px solid var(--color-border); }
+.pipeline-metric:last-child { border-bottom: 0; }
+.pipeline-metric-line {
+  display: flex; justify-content: space-between; gap: 10px;
+  margin-bottom: 6px; font-size: 13px;
+}
+.pipeline-metric-line strong { font: 500 13px var(--font-mono); }
+.pipeline-bar { height: 6px; background: var(--color-surface-subtle); border-radius: var(--radius-none); overflow: hidden; }
+.pipeline-bar-fill { height: 100%; background: var(--color-action); border-radius: var(--radius-none); }
+.pipeline-compress {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin: 0 16px; padding: 14px; background: var(--color-surface-subtle); border-radius: var(--radius-none);
+}
+.pipeline-pills { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; flex: 1; }
+.pipeline-pills span { height: 5px; background: var(--color-border); border-radius: var(--radius-none); }
+.pipeline-compressed {
+  display: flex; flex-direction: column; gap: 4px; width: 54px; flex: none;
+  padding: 5px; border: 1px solid var(--color-border); border-radius: var(--radius-none); background: var(--color-surface);
+}
+.pipeline-compressed span { height: 5px; border-radius: var(--radius-none); background: var(--color-surface-subtle); }
+.pipeline-compressed .is-filled { background: var(--color-action); }
+.pipeline-card-flush .pipeline-caption-muted { padding: 0 16px 16px; }
+
+/* Step 4 */
+.pipeline-model-title {
+  font: var(--font-weight-semibold) var(--font-size-body) / var(--line-height-body) var(--font-sans);
+  color: var(--color-brand-navy); text-align: center;
+}
+.pipeline-model-list { margin: 0; padding-left: 18px; color: var(--color-text-secondary); font-size: 13px; line-height: 1.6; }
+.pipeline-model-notes {
+  display: flex; flex-direction: column; gap: 10px;
+  padding-top: 14px; border-top: 1px solid var(--color-border);
+}
+.pipeline-notes-head {
+  margin: 0; color: var(--color-text); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.pipeline-model-copy { display: flex; flex-direction: column; gap: 10px; }
+.pipeline-model-copy p { margin: 0; color: var(--color-text-secondary); font-size: 13px; line-height: 1.6; }
+.pipeline-sunken {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 14px 12px; background: var(--color-surface-subtle); border-radius: var(--radius-none);
+}
+.pipeline-tree { width: 100%; height: 116px; display: block; }
+.pipeline-tree line { stroke: var(--color-text-secondary); stroke-width: 1; }
+.pipeline-tree-root { fill: var(--color-brand-navy-dark); }
+.pipeline-tree-branch { fill: var(--color-action); }
+.pipeline-tree-leaf { fill: var(--color-action-subtle); stroke: var(--color-action); stroke-width: 1.5; }
+.pipeline-tree-more { fill: var(--color-text-secondary); font: 13px var(--font-mono); }
+.pipeline-scale-wrap { display: flex; flex-direction: column; gap: 6px; }
+.pipeline-label {
+  color: var(--color-text-secondary); font-size: var(--font-size-label); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.pipeline-scale {
+  position: relative; height: 22px; background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border); border-radius: var(--radius-none);
+}
+.pipeline-scale-band { position: absolute; inset-block: 0; background: var(--color-action-subtle); }
+.pipeline-scale-baseline {
+  position: absolute; inset-block: 0; width: 2px; background: var(--color-text-secondary);
+}
+.pipeline-scale-point {
+  position: absolute; top: 50%; width: 11px; height: 11px; margin-left: -5.5px;
+  background: var(--color-action); border: 2px solid var(--color-surface); border-radius: var(--radius-none);
+  transform: translateY(-50%);
+}
+.pipeline-scale-axis {
+  display: flex; justify-content: space-between;
+  color: var(--color-text-secondary); font: var(--font-size-label) var(--font-mono);
+}
+.pipeline-scale-note { margin: 2px 0 0; color: var(--color-text-secondary); font-size: var(--font-size-small); line-height: 1.45; }
+
+/* Step 5 */
+.pipeline-map { border: 1px solid var(--color-border); border-radius: var(--radius-none); overflow: hidden; }
+/* The shared map component is fixed-height; inside a narrow column it wants
+   to be shorter than it is on the Prioritisation view. */
+.pipeline-map .map { height: 380px; }
+/* Step 2's map replaced a 393px diagram; holding that height keeps its card
+   the same size as before. */
+.pipeline-map-neighbourhood .map { height: 393px; }
+/* The priority legend is sized for the full-width Prioritisation map and swamps
+   this one, and the diagram carries its own risk legend below. The not-assessed
+   and orientation notes stay: they are the map's safety wording, and so does the
+   basemap attribution, which OpenStreetMap's licence requires. */
+/* The shared map's overlay stack is sized for the full-width Prioritisation
+   map and swamps this one, and its priority legend duplicates the diagram's own
+   below. It is replaced by .pipeline-map-notes, which restates the same safety
+   wording from lib/copy in a size that fits. The basemap attribution is left
+   alone: OpenStreetMap's licence requires it. */
+.pipeline-map .map-overlays, .pipeline-inset-map .map-overlays { display: none; }
+.pipeline-map-notes {
+  display: flex; flex-direction: column; gap: 4px; margin-top: 8px;
+  color: var(--color-text-secondary); font-size: var(--font-size-label); line-height: 1.4;
+}
+
+.pipeline-map-state {
+  display: grid; place-items: center; min-height: 300px; padding: 20px;
+  color: var(--color-text-secondary); background: var(--color-background);
+  border: 1px solid var(--color-border); border-radius: var(--radius-none);
+  font-size: 13px; text-align: center;
+}
+.pipeline-map-error { color: var(--color-danger); }
+.pipeline-rank { display: grid; grid-template-columns: minmax(140px, 190px) 1fr; gap: 14px; align-items: start; }
+.pipeline-inset { border: 1px solid var(--color-border); border-radius: var(--radius-none); overflow: hidden; }
+.pipeline-inset-head {
+  padding: 8px 12px; border-bottom: 1px solid var(--color-border);
+  font-size: 13px; font-weight: 700; letter-spacing: -.015em;
+}
+/* The inset holds a real map now. Near-square suits the 3x3 block, and the
+   height is scoped here rather than on .pipeline-map .map, which the larger
+   regional map above uses. */
+.pipeline-inset-map .map { height: 150px; }
+/* The attribution wraps to four lines in a 190px box and covers 43% of it. The
+   larger map on this same card carries the identical attribution for the same
+   tiles, so the licence is satisfied on screen; here it collapses to the "i"
+   control, which still discloses it on click. */
+.pipeline-inset-map .maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner {
+  display: none;
+}
+.pipeline-inset-map .maplibregl-ctrl-attrib.maplibregl-compact-show {
+  padding: 0; background: transparent; border-radius: var(--radius-none);
+}
+.pipeline-rank-detail { display: flex; flex-direction: column; gap: 8px; }
+.pipeline-rank-line { color: var(--color-text-secondary); font-size: 14px; }
+.pipeline-rank-line strong { color: var(--color-text); font: 500 20px var(--font-mono); }
+.pipeline-rank-line span strong { font-size: 14px; }
+/* Figures share one grid so the values line up on a common edge. Monospace
+   digits do the rest: #1 and 80.8% then agree optically, not just by column. */
+.pipeline-rank-figures {
+  display: grid; grid-template-columns: auto 1fr; gap: 4px 10px;
+  align-items: baseline; margin: 0;
+}
+.pipeline-rank-figures dt {
+  color: var(--color-text); font: 500 20px var(--font-mono); text-align: right;
+}
+.pipeline-rank-figures dd { margin: 0; color: var(--color-text-secondary); font-size: 14px; }
+.pipeline-rank-flag { color: var(--color-danger); font-size: 14px; font-weight: 700; }
+.pipeline-legend { display: flex; flex-direction: column; gap: 5px; margin-top: 2px; }
+.pipeline-legend-ends {
+  display: flex; justify-content: space-between; gap: 10px; color: var(--color-text-secondary);
+  font-size: var(--font-size-label); font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+}
+/* Grid, radius and the five band colours come from .scale, so this legend and
+   the map's own legend cannot drift apart. Only the sizing differs here. */
+.pipeline-legend-bar { height: 10px; margin-top: 0; }
+
+/* Keyed to the step, not the viewport: this block sits inside one column, so a
+   viewport breakpoint collapsed it while the column still had ample room. */
+@container (max-width: 380px) {
+  .pipeline-rank { grid-template-columns: 1fr; }
+}
+.view-intro { margin-bottom: 18px; color: var(--color-text-secondary); max-width: 760px; line-height: 1.55; }
+.panel-body { padding: 16px; }
+.empty-state { padding: 40px 20px; color: var(--color-text-secondary); text-align: center; font-size: 13px; }
+.summary-table { width: 100%; border-collapse: collapse; }
+.summary-table th { position: static; }
+.summary-table td, .summary-table th { font-size: 12px; }
+.summary-table td { height: auto; padding: 9px 12px; }
+.metrics-caption { margin: 0 0 14px; padding: 10px 12px; color: var(--color-text-secondary); background: var(--color-surface-muted); border: 1px solid var(--color-border); border-radius: var(--radius-none); font-size: var(--font-size-label); line-height: 1.5; }
+.card-markdown { font-size: 13px; line-height: 1.6; }
+.card-markdown h1 {
+  font: var(--font-weight-semibold) var(--font-size-section) / var(--line-height-section) var(--font-sans);
+  color: var(--color-brand-navy); margin: 0 0 var(--space-3);
+}
+.card-markdown h2 {
+  font: var(--font-weight-semibold) var(--font-size-component) / var(--line-height-component) var(--font-sans);
+  color: var(--color-brand-navy); margin: var(--space-6) 0 var(--space-2);
+}
+.card-markdown table { margin: 12px 0; }
+.card-markdown th, .card-markdown td { border-bottom: 1px solid var(--color-border); padding: 7px 10px; height: auto; }
+.card-markdown code { padding: 1px 4px; background: var(--color-surface-subtle); border-radius: var(--radius-none); font: var(--font-size-label) var(--font-mono); }
+.card-markdown ul { margin: 8px 0; padding-left: 20px; }
+.card-markdown li { margin: 4px 0; }
+.card-markdown p { margin: 8px 0; }
+.feature-group { margin-bottom: 18px; }
+.feature-group h3 {
+  margin: 0 0 var(--space-3);
+  font: var(--font-weight-semibold) var(--font-size-body) / var(--line-height-body) var(--font-sans);
+  color: var(--color-brand-navy);
+  border-bottom: var(--border-width) solid var(--color-border); padding-bottom: var(--space-2);
+}
+.feature-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 7px; }
+.feature-item { padding: 8px 10px; background: var(--color-surface-muted); border: 1px solid var(--color-border); border-radius: var(--radius-none); font-size: var(--font-size-label); }
+.feature-item strong { display: block; font: var(--font-size-label) var(--font-mono); }
+.feature-item small { display: block; margin-top: 2px; color: var(--color-text-secondary); font-size: var(--font-size-label); }
+
+/* Technologies used. Reuses .feature-group/.feature-list/.feature-item so the
+   panel reads as a sibling of the feature dictionary, with a wider track: these
+   cards carry a sentence, not a one-line signature. */
+.tech-blurb { margin: -4px 0 9px; color: var(--color-text-secondary); font-size: var(--font-size-label); }
+.tech-list { grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); }
+.tech-item { display: flex; gap: 10px; align-items: flex-start; }
+/* Masked, not <img>: the logos are single-path Simple Icons with no fill, so a
+   mask paints them in one token colour instead of 20 competing brand palettes. */
+.tech-icon {
+  flex: none; width: 20px; height: 20px; margin-top: 1px; background: var(--color-action);
+  mask-repeat: no-repeat; mask-position: center; mask-size: contain;
+  -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; -webkit-mask-size: contain;
+}
+/* Stand-in for the few technologies with no icon in the set. Same 20px box, so
+   the cards stay aligned whether or not a logo exists. */
+.tech-mono {
+  flex: none; display: flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; margin-top: 1px; color: var(--color-brand-navy);
+  background: var(--color-action-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-none);
+  font: 700 var(--font-size-label) var(--font-mono); letter-spacing: -0.02em;
+}
+.tech-text { min-width: 0; }
+/* .feature-item strong is monospace; these are product names, so restate it. */
+.tech-item .tech-name {
+  font: var(--font-weight-semibold) var(--font-size-small) / var(--line-height-small) var(--font-sans);
+  color: var(--color-brand-navy);
+}
+.tech-role { display: block; margin-top: 1px; color: var(--color-text-secondary); font-size: var(--font-size-label); }
+.tech-use { margin: 3px 0 0; font-size: var(--font-size-label); line-height: 1.45; }
+
+.loading, .error-state { padding: 30px; color: var(--color-text-secondary); text-align: center; font-size: 13px; }
+.error-state { color: var(--color-danger); }
+
+@media (max-width: 1150px) {
+  .analysis { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .advanced-filters { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
+}
+/* Footer */
+.site-footer {
+  margin-top: auto;
+  padding: 30px 0 34px;
+  color: var(--color-text-secondary);
+  background: var(--color-background);
+  border-top: 1px solid var(--color-border);
+  font-size: 12px;
+}
+.site-footer-inner {
+  width: min(1600px, calc(100% - 48px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 30px;
+  align-items: start;
+}
+.site-footer strong { display: block; margin-bottom: 7px; color: var(--color-text); font-size: 13px; }
+.site-footer p { margin: 0 0 7px; max-width: 62ch; }
+.site-footer p:last-child { margin-bottom: 0; }
+.site-footer-descriptor { color: var(--color-text); }
+/* The column's real heading: a step above the small "Built by" label that
+   introduces it, and clearly apart from the body prose beneath. */
+.site-footer-author {
+  margin-bottom: 9px; color: var(--color-text); font-size: 14px; font-weight: 700;
+}
+.site-footer-source { font-style: italic; }
+/* Link treatment reused from .pipeline-source-link, so external links look
+   the same wherever they appear. */
+.site-footer a { color: var(--color-action); font-weight: 700; text-decoration: none; }
+.site-footer a:hover { text-decoration: underline; }
+.site-footer-links { list-style: none; margin: 0; padding: 0; }
+.site-footer-links li { margin-top: 5px; }
+
+/* Small shared text roles. These exist as classes because the markup used to
+   set them inline, where a theme change could not reach them. */
+.subsection-heading {
+  margin: var(--space-6) 0 var(--space-2);
+  font: var(--font-weight-semibold) var(--font-size-body) / var(--line-height-body) var(--font-sans);
+  color: var(--color-brand-navy);
+}
+.cell-id {
+  color: var(--color-text-secondary);
+  font: var(--font-size-label) var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.meta-note { color: var(--color-text-secondary); font-size: var(--font-size-label); }
+
+@media (max-width: 720px) {
+  .workspace { width: calc(100% - 24px); }
+  .heading { flex-direction: column; align-items: stretch; gap: 18px; }
+  /* flex-basis becomes a height once the heading stacks, so the card would
+     otherwise stretch to 480px tall. */
+  .simulation { flex: 0 0 auto; }
+  .metrics { grid-template-columns: 1fr; }
+  .controls-header, .advanced-filters { grid-template-columns: 1fr; gap: 16px; }
+  .site-footer-inner { grid-template-columns: 1fr; gap: 22px; width: calc(100% - 24px); }
+  .topbar { grid-template-columns: 1fr auto; padding: 0 14px; }
+  .nav { grid-column: 1 / -1; overflow-x: auto; }
+}
+
+@media print {
+  .topbar, .site-footer, .controls, .simulation, .reveal, .row-actions, .search, .pills { display: none !important; }
+  .panel, .metric { box-shadow: none; }
+  .analysis.is-stale > .panel, .metrics.is-stale > .metric { opacity: 1; }
+}

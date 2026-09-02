@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+
+# Derived data and model artefacts: rebuild with the notebooks and train script.
+data/processed/*.parquet
+
+# The raw CAS extract is the immutable source snapshot; keep it out of git.
+data/raw/
