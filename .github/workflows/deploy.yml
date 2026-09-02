@@ -50,7 +50,7 @@ jobs:
           az acr create \
             --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
             --name "${{ env.ACR_NAME }}" \
-            --sku Standard \
+            --sku Basic \
             --admin-enabled false
 
   build-image:

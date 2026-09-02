@@ -11,8 +11,11 @@ var acrName = replace('${namePrefix}acr', '-', '')
 resource acr 'Microsoft.ContainerRegistry/registries@2023-11-01-preview' = {
   name: acrName
   location: location
+  // Basic, not Standard: the registry holds one small image (~212 MB against
+  // Basic's 10 GB quota). Standard's geo-replication and higher throughput buy
+  // nothing here. Must match the --sku in deploy.yml's bootstrap-acr job.
   sku: {
-    name: 'Standard'
+    name: 'Basic'
   }
   properties: {
     adminUserEnabled: false

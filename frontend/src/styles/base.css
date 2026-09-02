@@ -220,6 +220,15 @@ h1 {
   color: var(--color-danger); font-weight: var(--font-weight-semibold);
 }
 
+/* Same shape, neutral colours: for a wait that is expected rather than a fault
+   (the prediction service scales to zero, so a first visit wakes it). */
+.version-banner.is-info {
+  background: var(--color-surface-subtle);
+  border-color: var(--color-border);
+  border-left-color: var(--color-action);
+}
+.version-banner.is-info strong { color: var(--color-text); }
+
 /* Controls */
 .controls {
   margin-bottom: var(--space-4); padding: var(--space-4) var(--space-6);

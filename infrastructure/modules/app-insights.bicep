@@ -16,6 +16,11 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
       name: 'PerGB2018'
     }
     retentionInDays: 30
+    // Bound the worst case: without a cap a log-spam bug bills without limit.
+    // Normal operation for this service is far below 0.5 GB/day.
+    workspaceCapping: {
+      dailyQuotaGb: json('0.5')
+    }
   }
 }
 

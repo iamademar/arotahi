@@ -61,11 +61,16 @@ resource containerApp 'Microsoft.App/containerApps@2025-07-01' = {
           image: '${acrLoginServer}/${imageName}:${imageTag}'
           // No command override: the image's CMD is already the correct uvicorn
           // invocation, and it carries --workers 1, which must not be lost.
-          // Each worker loads its own ~570 MB copy of the model and the scored
-          // year frames, so a second worker would not fit this container.
+          // Each worker loads its own copy of the model and the scored year
+          // frames, so a second worker would not fit this container.
+          //
+          // Measured at these limits: 214 MiB resident of the 512 MiB cap, and
+          // the frontend's full-population load (22 sequential paged requests)
+          // completes in ~4 s. Sized down from 0.5 vCPU / 1 GiB, which was
+          // roughly twice what the service ever uses.
           resources: {
-            cpu: json('0.5') // json() wrapper is mandatory for a decimal CPU
-            memory: '1Gi'
+            cpu: json('0.25') // json() wrapper is mandatory for a decimal CPU
+            memory: '0.5Gi'
           }
           env: [
             {
@@ -105,10 +110,19 @@ resource containerApp 'Microsoft.App/containerApps@2025-07-01' = {
         }
       ]
       scale: {
-        // Never scale to zero: a cold start re-pays the model load and the
-        // parquet read. The service holds expensive startup state and near-zero
-        // steady state, which is exactly the shape scale-to-zero punishes.
-        minReplicas: 1
+        // Scales to zero deliberately, which is a cost decision rather than an
+        // architectural one. This service holds expensive startup state (the
+        // model bundle and both scored years) and near-zero steady state, so an
+        // always-on replica burns ~USD 34/month to serve a portfolio site that
+        // is read a few times a day. At minReplicas 0 the compute sits inside
+        // the monthly free grant instead.
+        //
+        // The cost is a cold start of roughly 15-20 s on the first request
+        // after an idle period. That is only acceptable because the frontend
+        // handles it explicitly: see the retry backoff in frontend/src/main.tsx
+        // and the waking-up state in frontend/src/App.tsx. If this ever becomes
+        // an operational service rather than a demo, set this back to 1.
+        minReplicas: 0
         maxReplicas: 3
       }
     }

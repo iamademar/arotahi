@@ -11,9 +11,22 @@ import './styles/fonts.css'
 import './styles/tokens.css'
 import './styles/base.css'
 
+// The prediction API scales to zero, so the first request after an idle period
+// waits for a container start plus the model load. Measured at 16.2s locally,
+// and Azure is the same order.
+//
+// These retries turn that into a slow load rather than an error. Six attempts
+// with exponential backoff capped at 8s span ~39s, which leaves real margin
+// over the measured cold start — a window that merely matched it would fail
+// exactly when the service was about to come up. Applies to every query,
+// because any of them can be the request that happens to wake the service.
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { refetchOnWindowFocus: false, retry: 1 },
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 6,
+      retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
+    },
   },
 })
 
